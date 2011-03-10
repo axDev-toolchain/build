@@ -56,7 +56,6 @@ usage() {
 
 ARG_LINARO_GCC_SRC_DIR=
 
-
 downloadFormBZR() {
   local MY_LP_LINARO_GCC=$1
   ARG_LINARO_GCC_SRC_DIR=${MY_LP_LINARO_GCC#*:}
@@ -65,9 +64,9 @@ downloadFormBZR() {
   if [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR}" ]; then
     info "Use bzr to clone ${MY_LP_LINARO_GCC}"
     RUN=`bzr clone ${MY_LP_LINARO_GCC} ${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR}`
-    [ $? -ne 0 ] && error "bzr ${MY_LP_LINARO_GCC} error"
+    [ $? -ne 0 ] && error "bzr ${MY_LP_LINARO_GCC} fails."
   else
-    info "${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR} is already exist, skip bzr clone"
+    info "${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR} already exists, skip bzr clone"
   fi
 }
 

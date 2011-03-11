@@ -45,13 +45,15 @@ note() {
 }
 
 usage() {
-  echo "--------------------------------------------------------------------"
-  echo "--prefix=           Specify where to install (default: /tmp/android-toolchain-eabi)"
-  echo "--toolchain-src=    Specify Android toolchain source dir (default: <toolchain/build>/../)"
-  echo "--with-gcc=         Specify GCC source (support: directory, bzr, url)"
-  echo "--apply-gcc-patch=(yes|no)   Apply gcc-patches (default: no)"
-  echo "--help              Print help message"
-  echo "--------------------------------------------------------------------"
+  echo "Usage: linaro-build.sh [options]"
+  echo
+  echo "Valid options (defaults are in brackets)"
+  echo "  --prefix=<path>             Specify installation path [/tmp/android-toolchain-eabi]"
+  echo "  --toolchain-src=<path>      Toolchain source directory [`dirname $PWD`]"
+  echo "  --with-gcc=<path>           Specify GCC source (support: directory, bzr, url)"
+  echo "  --apply-gcc-patch=<yes|no>  Apply Linaro's extra gcc-patches [no]"
+  echo "  --help                      Print this help message"
+  echo
 }
 
 ARG_LINARO_GCC_SRC_DIR=

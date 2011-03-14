@@ -290,7 +290,8 @@ endif
 config-host-libbfd: stmp-config-host-libbfd
 LIBBFD_CONFIG_ARGS=--prefix=$(prefix) \
 	--enable-targets=all --host=${host} --build=${build} \
-	$(baseargs) --disable-shared --enable-install-libbfd
+	$(baseargs) --disable-shared --enable-install-libbfd \
+	--disable-werror
 stmp-config-host-libbfd: config.status
 	([ -d libbfd-${BINUTILS_VERSION} ] || \
 	  mkdir libbfd-${BINUTILS_VERSION}) && \

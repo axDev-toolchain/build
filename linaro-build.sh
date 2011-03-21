@@ -44,8 +44,10 @@ note() {
   echo "[NOTE] $@"
 }
 
+PROGNAME=`basename $0`
+
 usage() {
-  echo "Usage: linaro-build.sh [options]"
+  echo "Usage: $PROGNAME [options]"
   echo
   echo "Valid options (defaults are in brackets)"
   echo "  --prefix=<path>             Specify installation path [/tmp/android-toolchain-eabi]"

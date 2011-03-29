@@ -20,6 +20,7 @@ ARG_WGET_LINARO_GCC_SRC=
 ARG_BZR_LINARO_GCC_SRC=
 
 ARG_WITH_GCC=
+ARG_WITH_SYSROOT=
 
 ARG_APPLY_PATCH=no
 
@@ -53,6 +54,7 @@ usage() {
   echo "  --prefix=<path>             Specify installation path [/tmp/android-toolchain-eabi]"
   echo "  --toolchain-src=<path>      Toolchain source directory [`dirname $PWD`]"
   echo "  --with-gcc=<path>           Specify GCC source (support: directory, bzr, url)"
+  echo "  --with-sysroot=<path>       Specify SYSROOT directory"
   echo "  --apply-gcc-patch=<yes|no>  Apply Linaro's extra gcc-patches [no]"
   echo "  --help                      Print this help message"
   echo
@@ -134,6 +136,9 @@ while [ $# -gt 0 ]; do
     --with-gcc=*)
       ARG_WITH_GCC="${ARG#*=}"
       ;;
+    --with-sysroot=*)
+      ARG_WITH_SYSROOT="${ARG#*=}"
+      ;;
     --apply-gcc-patch=yes | --apply-gcc-patch=no)
       ARG_APPLY_PATCH="${ARG#*=}"
       ;;
@@ -149,6 +154,7 @@ done
 BUILD_ARCH=`uname -m`
 BUILD_WITH_LOCAL=
 BUILD_HOST=
+BUILD_SYSROOT=
 
 if [ "${ARG_TOOLCHAIN_SRC_DIR}" = "" ] || [ ! -f "${ARG_TOOLCHAIN_SRC_DIR}/build/configure" ] ; then
   error "--toolchain-src-dir is not set or ${ARG_TOOLCHAIN_SRC_DIR} is not ANDROID_TOOLCHAIN_ROOT"
@@ -156,6 +162,13 @@ fi
 
 if [ "${ARG_WITH_GCC}" = "" ]; then
   error "Must specify --with-gcc to build toolchain"
+fi
+
+if [ ! -z "${ARG_WITH_SYSROOT}" ]; then
+  if [ ! -d "${ARG_WITH_SYSROOT}" ]; then
+    error "SYSROOT ${ARG_WITH_SYSROOT} not exist"
+  fi
+  BUILD_SYSROOT="--with-sysroot=${ARG_WITH_SYSROOT}"
 fi
 
 getGCCFrom $ARG_WITH_GCC
@@ -190,6 +203,7 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   --prefix=${ARG_PREFIX_DIR} --target=arm-eabi \
   --disable-docs --disable-nls \
   --host=${BUILD_HOST} --build=${BUILD_HOST} \
+  ${BUILD_SYSROOT} \
   --with-gcc-version=${GCC_VARIANT} \
   --with-binutils-version=2.20.1 \
   --with-gmp-version=4.2.4 \

@@ -20,6 +20,7 @@ ARG_WGET_LINARO_GCC_SRC=
 ARG_BZR_LINARO_GCC_SRC=
 
 ARG_WITH_GCC=
+ARG_WITH_GDB=
 ARG_WITH_SYSROOT=
 
 ARG_APPLY_PATCH=no
@@ -54,72 +55,91 @@ usage() {
   echo "  --prefix=<path>             Specify installation path [/tmp/android-toolchain-eabi]"
   echo "  --toolchain-src=<path>      Toolchain source directory [`dirname $PWD`]"
   echo "  --with-gcc=<path>           Specify GCC source (support: directory, bzr, url)"
+  echo "  --with-gdb=<path>           Specify gdb source (support: directory, bzr, url)"
   echo "  --with-sysroot=<path>       Specify SYSROOT directory"
   echo "  --apply-gcc-patch=<yes|no>  Apply Linaro's extra gcc-patches [no]"
   echo "  --help                      Print this help message"
   echo
 }
 
-ARG_LINARO_GCC_SRC_DIR=
+# $1 - package name (gcc, gdb, etc)
+# $2 - value of ARG_WITH_package (lp:*, http://*)
+downloadFromBZR() {
+  local package=$1
+  local MY_LP_LINARO_PKG=$2
+  local src_dir=${MY_LP_LINARO_PKG#*:}
 
-downloadFormBZR() {
-  local MY_LP_LINARO_GCC=$1
-  ARG_LINARO_GCC_SRC_DIR=${MY_LP_LINARO_GCC#*:}
+  local PACKAGE_NAME=`echo $package | tr "[:lower:]" "[:upper:]"`
+  eval "ARG_LINARO_${PACKAGE_NAME}_SRC_DIR=${src_dir}"
 
-  [ ! -d ${ARG_TOOLCHAIN_SRC_DIR}/gcc ] && mkdir -p "${ARG_TOOLCHAIN_SRC_DIR}/gcc"
-  if [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR}" ]; then
-    info "Use bzr to clone ${MY_LP_LINARO_GCC}"
-    RUN=`bzr clone ${MY_LP_LINARO_GCC} ${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR}`
-    [ $? -ne 0 ] && error "bzr ${MY_LP_LINARO_GCC} fails."
+  [ ! -d ${ARG_TOOLCHAIN_SRC_DIR}/$package ] && mkdir -p "${ARG_TOOLCHAIN_SRC_DIR}/$package"
+  if [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/$package/${src_dir}" ]; then
+    info "Use bzr to clone ${MY_LP_LINARO_PKG}"
+    RUN=`bzr clone ${MY_LP_LINARO_PKG} ${ARG_TOOLCHAIN_SRC_DIR}/$package/${src_dir}`
+    [ $? -ne 0 ] && error "bzr ${MY_LP_LINARO_PKG} fails."
   else
-    info "${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR} already exists, skip bzr clone"
+    info "${ARG_TOOLCHAIN_SRC_DIR}/$package/${src_dir} already exists, skip bzr clone"
   fi
 }
 
-downloadFormHTTP() {
-  info "Use wget to get $1"
-  local MY_LINARO_GCC_FILE=`basename $1`
-  if [ -f "${MY_LINARO_GCC_FILE}" ]; then
+# $1 - package name (gcc, gdb, etc)
+# $2 - arg (lp:*, http://*)
+downloadFromHTTP() {
+  local package=$1
+  local url=$2
+  local file=`basename $url`
+
+  local PACKAGE_NAME=`echo $package | tr "[:lower:]" "[:upper:]"`
+
+  info "Use wget to get $file"
+  if [ -f "${ARG_TOOLCHAIN_SRC_DIR}/${file}" ] || [ -f "${ARG_TOOLCHAIN_SRC_DIR}/$package/${file}" ]; then
     #TODO: Add md5 check
-    info "${MY_LINARO_GCC_FILE} is already exist, skip download"
+    info "${file} is already exist, skip download"
   else
-    RUN=`wget $1`
-    [ $? -ne 0 ] && error "wget $1 error"
+    wget "$url" || error "wget $1 error"
+    mv "$file" "${ARG_TOOLCHAIN_SRC_DIR}/$package" || error "fail to move $file"
     #TODO: Add md5 check
   fi
 
-  ARG_LINARO_GCC_SRC_DIR=`basename ${MY_LINARO_GCC_FILE} .tar.bz2`
-  [ ! -d ${ARG_TOOLCHAIN_SRC_DIR}/gcc ] && mkdir -p "${ARG_TOOLCHAIN_SRC_DIR}/gcc"
-  if [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR}" ]; then
-    info "untar ${MY_LINARO_GCC_FILE} to ${ARG_TOOLCHAIN_SRC_DIR}/gcc"
-    tar jxf ${MY_LINARO_GCC_FILE} -C ${ARG_TOOLCHAIN_SRC_DIR}/gcc
-  else
-    info "${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR} is already exist, skip untar"
-  fi
+  local src_dir=$(basename $file)
+  src_dir=$(echo $src_dir | sed "s/\(\.tar\.bz2\|\.tar\.gz\|\.tgz\|\.tbz\)//")
+  eval "ARG_LINARO_${PACKAGE_NAME}_SRC_DIR=${src_dir}"
 }
 
-getGCCFrom() {
-  # set empty to detect error
-  ARG_LINARO_GCC_SRC_DIR=
-  ARG_LINARO_GCC_VER=
+# $1 - value of ARG_WITH_package
+getPackage() {
+  local package=$(basename $1)
+  local version=${package#*-}
+  version=$(echo $version | sed "s/\(\.tar\.bz2\|\.tar\.gz\|\.tgz\|\.tbz\)//")
+  package=${package%%-*}
+
+  local PACKAGE_NAME=`echo $package | tr "[:lower:]" "[:upper:]"`
 
   case $1 in
     lp:*) # bzr clone lp:gcc-linaro
-      downloadFormBZR $1
+      downloadFromBZR $package $1
       ;;
     http://*) # snapshot URL: http://launchpad.net/gcc-linaro/4.5/4.5-2011.03-0/+download/gcc-linaro-4.5-2011.03-0.tar.bz2
-      downloadFormHTTP $1
+      downloadFromHTTP $package $1
       ;;
     *) # local directory
-      [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/gcc/$1" ] && error "$ARG_TOOLCHAIN_SRC_DIR/gcc/$ARG_LINARO_GCC_SRC_DIR not exist"
-      ARG_LINARO_GCC_SRC_DIR=$1
+      [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/$package/$1" ] && error "$ARG_TOOLCHAIN_SRC_DIR/$package/$1 not exist"
+      eval "ARG_LINARO_${PACKAGE_NAME}_SRC_DIR=$1"
   esac
 
-  ARG_LINARO_GCC_VER=`echo ${ARG_LINARO_GCC_SRC_DIR} | grep -o "4\.[5-9]"`
-  if [ ${ARG_LINARO_GCC_VER} = "" ]; then
-    warn "Cannot detect version for ${ARG_LINARO_GCC_VER}, 4.5 is used"
-    ARG_LINARO_GCC_VER=4.5
-  fi
+  # verify version
+  case $package in
+    gcc)
+      # make sure version is greater than 4.5
+      ver=`echo $version | grep -o "^4\.\([5-9]\|[1-9][0-9]\)"`
+      if [ x"$version" = x"" ]; then
+        warn "Cannot detect version for $package-$version, 4.5 is used"
+        version="4.5"
+      fi
+      ;;
+  esac
+
+  eval "ARG_LINARO_${PACKAGE_NAME}_VER=$version"
 }
 
 while [ $# -gt 0 ]; do
@@ -135,6 +155,9 @@ while [ $# -gt 0 ]; do
       ;;
     --with-gcc=*)
       ARG_WITH_GCC="${ARG#*=}"
+      ;;
+    --with-gdb=*)
+      ARG_WITH_GDB="${ARG#*=}"
       ;;
     --with-sysroot=*)
       ARG_WITH_SYSROOT="${ARG#*=}"
@@ -160,7 +183,7 @@ if [ "${ARG_TOOLCHAIN_SRC_DIR}" = "" ] || [ ! -f "${ARG_TOOLCHAIN_SRC_DIR}/build
   error "--toolchain-src-dir is not set or ${ARG_TOOLCHAIN_SRC_DIR} is not ANDROID_TOOLCHAIN_ROOT"
 fi
 
-if [ "${ARG_WITH_GCC}" = "" ]; then
+if [ x"${ARG_WITH_GCC}" = x"" ]; then
   error "Must specify --with-gcc to build toolchain"
 fi
 
@@ -171,7 +194,11 @@ if [ ! -z "${ARG_WITH_SYSROOT}" ]; then
   BUILD_SYSROOT="--with-sysroot=${ARG_WITH_SYSROOT}"
 fi
 
-getGCCFrom $ARG_WITH_GCC
+for package in ${!ARG_WITH*}; do
+  if [ x"${!package}" != "x" ]; then
+    getPackage ${!package}
+  fi
+done
 
 if [ "x${ARG_APPLY_PATCH}" = "xyes" ]; then
   note "Will apply patches in toolchain/gcc-patches/${ARG_LINARO_GCC_VER}"
@@ -186,8 +213,13 @@ if [ "x${ARG_APPLY_PATCH}" = "xyes" ]; then
 fi
 
 
-GCC_VARIANT=`basename ${ARG_LINARO_GCC_SRC_DIR}`
-GCC_VARIANT=${GCC_VARIANT#gcc-*}
+if [ x"${ARG_WITH_GCC}" != x"" ]; then
+  BUILD_WITH_GCC="--with-gcc-version=${ARG_LINARO_GCC_VER}"
+fi
+
+if [ x"${ARG_WITH_GDB}" != x"" ]; then
+  BUILD_WITH_GDB="--with-gdb-version=${ARG_LINARO_GDB_VER}"
+fi
 
 if echo "$BUILD_ARCH" | grep -q '64' ; then
   info "Use 64-bit Build Enviorment"
@@ -204,11 +236,13 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   --disable-docs --disable-nls \
   --host=${BUILD_HOST} --build=${BUILD_HOST} \
   ${BUILD_SYSROOT} \
-  --with-gcc-version=${GCC_VARIANT} \
+  \
+  ${BUILD_WITH_GCC} \
+  ${BUILD_WITH_GDB} \
   --with-binutils-version=2.20.1 \
+  \
   --with-gmp-version=4.2.4 \
-  --with-mpfr-version=2.4.1 \
-  --with-gdb-version=7.1.x
+  --with-mpfr-version=2.4.1
 
 make
 make install

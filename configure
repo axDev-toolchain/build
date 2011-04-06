@@ -1582,7 +1582,7 @@ if test "${enable_graphite+set}" = set; then
   enableval="$enable_graphite"
 
 fi;
-if test x${enableval} != yno; then
+if test x${enableval} != xno; then
   graphite=yes
 fi
 if test "$GCC_MIN_VERSION_4_5_0" == "no"; then

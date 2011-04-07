@@ -123,7 +123,10 @@ getPackage() {
       downloadFromHTTP $package $1
       ;;
     *) # local directory
-      [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/$package/$1" ] && error "$ARG_TOOLCHAIN_SRC_DIR/$package/$1 not exist"
+      [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/$package/$1" ] && \
+        echo "Directory $ARG_TOOLCHAIN_SRC_DIR/$package/$1 does not exist" && \
+        mkdir -p $ARG_TOOLCHAIN_SRC_DIR/$package && \
+        error "Please extract the $package source into directory $ARG_TOOLCHAIN_SRC_DIR/$package"
       eval "ARG_LINARO_${PACKAGE_NAME}_SRC_DIR=$1"
   esac
 

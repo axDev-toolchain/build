@@ -201,17 +201,18 @@ for package in ${!ARG_WITH*}; do
 done
 
 if [ "x${ARG_APPLY_PATCH}" = "xyes" ]; then
-  note "Will apply patches in toolchain/gcc-patches/${ARG_LINARO_GCC_VER}"
-  cd ${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR}
-  for FILE in `ls ${ARG_TOOLCHAIN_SRC_DIR}/gcc-patches/${ARG_LINARO_GCC_VER} 2>/dev/null` ; do
+  sub_gcc_ver="`echo ${ARG_LINARO_GCC_VER} | grep -o '4\.\([5-9]\|[1-9][0-9]\)'`"
+  note "Will apply patches in toolchain/gcc-patches/${sub_gcc_ver}"
+  cd ${ARG_TOOLCHAIN_SRC_DIR}/gcc/${ARG_LINARO_GCC_SRC_DIR} &&
+  for FILE in `ls ${ARG_TOOLCHAIN_SRC_DIR}/gcc-patches/${sub_gcc_ver} 2>/dev/null` ; do
     if [ ! -f ${FILE}-patch.log ]; then
-      note "Applying patch ${FILE}"
-      git apply ${ARG_TOOLCHAIN_SRC_DIR}/gcc-patches/${ARG_LINARO_GCC_VER}/${FILE} 2>&1 | tee "${FILE}-patch.log"
+      note "Apply patch: ${FILE}"
+      git apply ${ARG_TOOLCHAIN_SRC_DIR}/gcc-patches/${sub_gcc_ver}/${FILE} 2>&1 | \
+        tee "${FILE}-patch.log"
     fi
   done
   cd -
 fi
-
 
 if [ x"${ARG_WITH_GCC}" != x"" ]; then
   BUILD_WITH_GCC="--with-gcc-version=${ARG_LINARO_GCC_VER}"

@@ -245,5 +245,4 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   --with-gmp-version=4.2.4 \
   --with-mpfr-version=2.4.1
 
-make
-make install
+make && make install

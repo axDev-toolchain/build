@@ -230,6 +230,7 @@ if echo "$BUILD_ARCH" | grep -q '64' ; then
   BUILD_HOST=x86_64-linux-gnu
   CC="gcc -m32"
   CXX="g++ -m32"
+  export CC CXX
 else
   info "Use 32-bit Build environment"
   BUILD_HOST=i686-unknown-linux-gnu

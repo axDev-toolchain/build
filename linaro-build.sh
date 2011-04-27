@@ -119,7 +119,8 @@ getPackage() {
     lp:*) # bzr clone lp:gcc-linaro
       downloadFromBZR $package $1
       ;;
-    http://*) # snapshot URL: http://launchpad.net/gcc-linaro/4.5/4.5-2011.03-0/+download/gcc-linaro-4.5-2011.03-0.tar.bz2
+    http://*) # snapshot URL
+      # http://launchpad.net/gcc-linaro/4.5/4.5-2011.04-0/+download/gcc-linaro-4.5-2011.04-0.tar.bz2
       downloadFromHTTP $package $1
       ;;
     *) # local directory
@@ -228,9 +229,11 @@ fi
 if echo "$BUILD_ARCH" | grep -q '64' ; then
   info "Use 64-bit Build environment"
   BUILD_HOST=x86_64-linux-gnu
-  CC="gcc -m32"
-  CXX="g++ -m32"
-  export CC CXX
+  ABI="32"
+  CFLAGS="-m32"
+  CXXFLAGS="-m32"
+  LDFLAGS="-L/usr/lib32"
+  export ABI CFLAGS CXXFLAGS LDFLAGS
 else
   info "Use 32-bit Build environment"
   BUILD_HOST=i686-unknown-linux-gnu

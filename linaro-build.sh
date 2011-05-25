@@ -97,7 +97,7 @@ downloadFromHTTP() {
     info "${file} is already exist, skip download"
   else
     wget "$url" || error "wget $1 error"
-    mv "$file" "${ARG_TOOLCHAIN_SRC_DIR}/$package" || error "fail to move $file"
+    mv "$file" "${ARG_TOOLCHAIN_SRC_DIR}/$package/" || error "fail to move $file"
     #TODO: Add md5 check
   fi
 
@@ -114,6 +114,8 @@ getPackage() {
   package=${package%%-*}
 
   local PACKAGE_NAME=`echo $package | tr "[:lower:]" "[:upper:]"`
+  # Make sure that package dir exists
+  mkdir -p ${ARG_TOOLCHAIN_SRC_DIR}/$package || error "Cannot create ${ARG_TOOLCHAIN_SRC_DIR}/$package directory"
 
   case $1 in
     lp:*) # bzr clone lp:gcc-linaro

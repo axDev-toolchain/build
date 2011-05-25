@@ -92,11 +92,11 @@ downloadFromHTTP() {
   local PACKAGE_NAME=`echo $package | tr "[:lower:]" "[:upper:]"`
 
   info "Use wget to get $file"
-  if [ -f "${ARG_TOOLCHAIN_SRC_DIR}/${file}" ] || [ -f "${ARG_TOOLCHAIN_SRC_DIR}/$package/${file}" ]; then
+  if [ -f "${ARG_TOOLCHAIN_SRC_DIR}/$package/${file}" ]; then
     #TODO: Add md5 check
     info "${file} is already exist, skip download"
   else
-    wget "$url" || error "wget $1 error"
+    wget -c "$url" || error "wget $1 error"
     mv "$file" "${ARG_TOOLCHAIN_SRC_DIR}/$package/" || error "fail to move $file"
     #TODO: Add md5 check
   fi

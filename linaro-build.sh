@@ -67,18 +67,20 @@ usage() {
 downloadFromBZR() {
   local package=$1
   local MY_LP_LINARO_PKG=$2
-  local src_dir=${MY_LP_LINARO_PKG#*:}
+  local version=$3
 
   local PACKAGE_NAME=`echo $package | tr "[:lower:]" "[:upper:]"`
-  eval "ARG_LINARO_${PACKAGE_NAME}_SRC_DIR=${src_dir}"
+  eval "ARG_LINARO_${PACKAGE_NAME}_SRC_DIR=$package-$version"
 
-  [ ! -d ${ARG_TOOLCHAIN_SRC_DIR}/$package ] && mkdir -p "${ARG_TOOLCHAIN_SRC_DIR}/$package"
-  if [ ! -d "${ARG_TOOLCHAIN_SRC_DIR}/$package/${src_dir}" ]; then
+  dir=${ARG_TOOLCHAIN_SRC_DIR}/$package/$package-$version
+  if [ ! -d "$dir" ]; then
     info "Use bzr to clone ${MY_LP_LINARO_PKG}"
-    RUN=`bzr clone ${MY_LP_LINARO_PKG} ${ARG_TOOLCHAIN_SRC_DIR}/$package/${src_dir}`
+    echo bzr clone ${MY_LP_LINARO_PKG} $dir
+    bzr clone ${MY_LP_LINARO_PKG} $dir
     [ $? -ne 0 ] && error "bzr ${MY_LP_LINARO_PKG} fails."
   else
-    info "${ARG_TOOLCHAIN_SRC_DIR}/$package/${src_dir} already exists, skip bzr clone"
+    info "$dir already exists, doing bzr update"
+    (cd $dir; bzr update)
   fi
 }
 
@@ -108,10 +110,24 @@ downloadFromHTTP() {
 
 # $1 - value of ARG_WITH_package
 getPackage() {
-  local package=$(basename $1)
-  local version=${package#*-}
-  version=$(echo $version | sed "s/\(\.tar\.bz2\|\.tar\.gz\|\.tgz\|\.tbz\)//")
-  package=${package%%-*}
+  local package
+  local version
+  case $1 in
+    lp:*)
+      package=${1##lp:}
+      version=${package#*-}
+      # Replace / with -
+      version=${version////-}
+      package=${package%%-*}
+      info "Detected package \"$package\" and version \"$version\" for $1 bzr repo"
+      ;;
+    *)
+      package=$(basename $1)
+      version=${package#*-}
+      version=$(echo $version | sed "s/\(\.tar\.bz2\|\.tar\.gz\|\.tgz\|\.tbz\)//")
+      package=${package%%-*}
+      ;;
+  esac
 
   local PACKAGE_NAME=`echo $package | tr "[:lower:]" "[:upper:]"`
   # Make sure that package dir exists
@@ -119,7 +135,7 @@ getPackage() {
 
   case $1 in
     lp:*) # bzr clone lp:gcc-linaro
-      downloadFromBZR $package $1
+      downloadFromBZR $package $1 $version
       ;;
     http://*) # snapshot URL
       # http://launchpad.net/gcc-linaro/4.5/4.5-2011.04-0/+download/gcc-linaro-4.5-2011.04-0.tar.bz2

@@ -252,6 +252,8 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   --with-binutils-version=2.20.1 \
   \
   --with-gmp-version=4.2.4 \
-  --with-mpfr-version=2.4.1
+  --with-mpfr-version=2.4.1 \
+  \
+  ${LINARO_BUILD_EXTRA_CONFIGURE_FLAGS}
 
 make && make install

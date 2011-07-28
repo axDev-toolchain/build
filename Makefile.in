@@ -645,7 +645,8 @@ config-target-gdb: stmp-config-target-gdb
 
 GDB_CONFIG_ARGS=$(baseargs) --prefix=$(prefix) \
 	--target=$(GDB_TARGET) --host=${cur_host} --build=${cur_build} \
-	--disable-nls
+	--disable-nls \
+	--disable-werror
 
 stmp-config-target-gdb: config.status $(canadian_stmp)
 	([ -d ${GDB_VERSION} ] || \

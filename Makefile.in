@@ -388,6 +388,9 @@ GCC_CONFIG_ARGS += --with-cloog=${CLOOG_DIR} --with-ppl=${PPL_DIR} \
 GCC_CONFIG_ARGS += \
 	'--with-host-libstdcxx=-static-libgcc \
 	 -Wl,-Bstatic,-lstdc++,-Bdynamic -lm'
+ifeq ($(GCC_MIN_VERSION_4_5_0),yes)
+GCC_CONFIG_ARGS += " $(CLOOG_BACKEND)"
+endif
 endif
 
 # Add Android specific gcc options.
@@ -605,6 +608,7 @@ CLOOG_CONFIG_ARGS=$(baseargs) --prefix=$(TEMP_INSTALLDIR) --disable-shared \
        --with-gmp=$(GMP_DIR)
 # for cloog-ppl version 0.15.x, ppl is required.
 ifneq ($(findstring ppl-,$(CLOOG_VERSION)),)
+CLOOG_TARGET = libcloog.la
 stmp-config-host-cloog: config.status stmp-install-host-ppl \
 			stmp-install-host-ppl-workaround
 stmp-install-host-ppl-workaround:
@@ -614,6 +618,8 @@ stmp-install-host-ppl-workaround:
 	 $(PPL_DIR)/include/ppl_c.h
 	$(STAMP) $@
 CLOOG_CONFIG_ARGS+= --with-ppl=$(PPL_DIR)
+else
+CLOOG_TARGET = libcloog-isl.la
 endif
 stmp-config-host-cloog: config.status stmp-install-host-gmp
 	([ -d ${CLOOG_VERSION} ] || \
@@ -625,7 +631,7 @@ stmp-config-host-cloog: config.status stmp-install-host-gmp
 	$(STAMP) $@
 stmp-build-host-cloog: stmp-config-host-cloog
 	# Ignore the generation of cloog utilities
-	$(MAKE) -C ${CLOOG_VERSION} libcloog.la && \
+	$(MAKE) -C ${CLOOG_VERSION} $(CLOOG_TARGET) && \
 	$(STAMP) $@
 build-host-cloog: stmp-build-host-cloog
 stmp-install-host-cloog: stmp-build-host-cloog

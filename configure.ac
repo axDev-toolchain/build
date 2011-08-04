@@ -307,13 +307,21 @@ if test -f "${gcc_version_file}"; then
   else
     GCC_MIN_VERSION_4_5_0="no"
   fi
+  if test "$GCC_MAJOR" -gt 4 -o \
+              \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 6 \) ; then
+    GCC_MIN_VERSION_4_6_0="yes"
+  else
+    GCC_MIN_VERSION_4_6_0="no"
+  fi
 else
   # No version file, assume it is trunk
   GCC_MIN_VERSION_4_3_0="yes"
   GCC_MIN_VERSION_4_5_0="yes"
+  GCC_MIN_VERSION_4_6_0="yes"
 fi
 AC_SUBST(GCC_MIN_VERSION_4_3_0)
 AC_SUBST(GCC_MIN_VERSION_4_5_0)
+AC_SUBST(GCC_MIN_VERSION_4_6_0)
 
 # newlib version (default is 1.16.0)
 # newlib is only used for arm-newlib-eabi for testing
@@ -391,8 +399,13 @@ AC_ARG_WITH([ppl-version],
 [PPL_VERSION="0.11.2"])
 AC_MSG_RESULT($PPL_VERSION)
 ANDROID_CHECK_PACKAGE(ppl-${PPL_VERSION})
+if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
+# With gcc 4.6+, we can use ISL as a (better) backend
+CLOOG_BACKEND="--enable-cloog-backend=isl"
+fi
 fi
 AC_SUBST(PPL_VERSION)
+AC_SUBST(CLOOG_BACKEND)
 
 if test "$ENABLE_GRAPHITE" == "yes"; then
 # cloog-ppl or cloog version (default is 0.15.9)

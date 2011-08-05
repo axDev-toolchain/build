@@ -439,15 +439,15 @@ ANDROID_CHECK_PACKAGE(cloog-${CLOOG_VERSION})
 fi
 AC_SUBST(CLOOG_VERSION)
 
-# gdb version (default is 6.6)
+# gdb version (default is the current linaro release)
 AC_MSG_CHECKING([target gdb version to build])
 AC_ARG_WITH([gdb-version],
   [  --with-gdb-version=VERSION
-                          use gdb-VERSION (default is 6.6)],
+                          use gdb-VERSION (default is the current linaro release)],
   [if test x"$withval" != x ; then
      GDB_VERSION="$withval"
    fi],
-[GDB_VERSION="6.6"])
+[GDB_VERSION="linaro-7.2-2011.05-0"])
 AC_MSG_RESULT($GDB_VERSION)
 AC_SUBST(GDB_VERSION)
 ANDROID_CHECK_PACKAGE(gdb-${GDB_VERSION})

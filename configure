@@ -1312,7 +1312,7 @@ Optional Packages:
   --with-cloog-version=VERSION
                           use cloog-VERSION
   --with-gdb-version=VERSION
-                          use gdb-VERSION (default is 6.6)
+                          use gdb-VERSION (default is the current linaro release)
   --with-sysroot=DIR
                           use target sysroot in DIR
   --with-mpc=PATH
@@ -2635,7 +2635,7 @@ fi
 fi
 
 
-# gdb version (default is 6.6)
+# gdb version (default is the current linaro release)
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking target gdb version to build" >&5
 $as_echo_n "checking target gdb version to build... " >&6; }
 
@@ -2645,7 +2645,7 @@ if test "${with_gdb_version+set}" = set; then :
      GDB_VERSION="$withval"
    fi
 else
-  GDB_VERSION="6.6"
+  GDB_VERSION="linaro-7.2-2011.05-0"
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GDB_VERSION" >&5

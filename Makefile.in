@@ -636,7 +636,7 @@ build-host-cloog: stmp-build-host-cloog
 stmp-install-host-cloog: stmp-build-host-cloog
 	$(MAKE) -C ${CLOOG_VERSION} install-libLTLIBRARIES \
 		install-pkgincludeHEADERS
-ifneq ($(findstring ppl-,$(CLOOG_VERSION)),)
+ifeq ($(findstring ppl-,$(CLOOG_VERSION)),)
 	$(MAKE) -C ${CLOOG_VERSION}/isl install-libLTLIBRARIES \
 		install-pkgincludeHEADERS
 endif

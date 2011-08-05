@@ -418,7 +418,7 @@ endif
 GCC_CONFIG_ARGS += $(baseargs)
 
 # We have to add -mandroid in target CFLAGS and CXXFLAGS
-stmp-config-target-gcc: config.status stmp-build-target-binutils
+stmp-config-target-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
 	([ -d ${GCC_VERSION} ] || \
 	  mkdir ${GCC_VERSION}) && \
 	($(canadian_env) \

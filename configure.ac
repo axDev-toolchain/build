@@ -303,7 +303,7 @@ if test -f "${gcc_version_file}"; then
     GCC_MIN_VERSION_4_3_0="no"
   fi
   AC_MSG_RESULT([$GCC_MIN_VERSION_4_3_0])
-  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0])
+  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.4.0])
   if test "$GCC_MAJOR" -gt 4 -o \
               \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 5 \) ; then
     GCC_MIN_VERSION_4_5_0="yes"
@@ -311,7 +311,7 @@ if test -f "${gcc_version_file}"; then
     GCC_MIN_VERSION_4_5_0="no"
   fi
   AC_MSG_RESULT([$GCC_MIN_VERSION_4_5_0])
-  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0])
+  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0])
   if test "$GCC_MAJOR" -gt 4 -o \
               \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 6 \) ; then
     GCC_MIN_VERSION_4_6_0="yes"
@@ -423,7 +423,7 @@ AC_ARG_WITH([cloog-version],
 [CLOOG_VERSION="default"])
 AC_MSG_RESULT($CLOOG_VERSION)
 if test "$CLOOG_VERSION" = "default"; then
-  AC_MSG_CHECKING([Which version of cloog to build under gcc 4.6+ condition $GCC_MIN_VERSION_4_6_0])
+  AC_MSG_CHECKING([which version of cloog to build under gcc 4.6+ condition $GCC_MIN_VERSION_4_6_0])
   # Default is 0.15.9 for gcc 4.5 and below, 0.16.3 for gcc 4.6 and higher
   if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
     CLOOG_VERSION="0.16.3"

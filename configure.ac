@@ -295,29 +295,37 @@ if test -f "${gcc_version_file}"; then
   GCC_MAJOR=`head -n 1 $gcc_version_file | sed  -e "s/[[^0-9]].*//"`
   GCC_MINOR=`head -n 1 $gcc_version_file | \
 	    sed  -e "s/^[[0-9]]*\.//" -e "s/[[^0-9]].*//"`
+  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0])
   if test "$GCC_MAJOR" -gt 4 -o \
           \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 3 \) ; then
     GCC_MIN_VERSION_4_3_0="yes"
   else
     GCC_MIN_VERSION_4_3_0="no"
   fi
+  AC_MSG_RESULT([$GCC_MIN_VERSION_4_3_0])
+  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0])
   if test "$GCC_MAJOR" -gt 4 -o \
               \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 5 \) ; then
     GCC_MIN_VERSION_4_5_0="yes"
   else
     GCC_MIN_VERSION_4_5_0="no"
   fi
+  AC_MSG_RESULT([$GCC_MIN_VERSION_4_5_0])
+  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0])
   if test "$GCC_MAJOR" -gt 4 -o \
               \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 6 \) ; then
     GCC_MIN_VERSION_4_6_0="yes"
   else
     GCC_MIN_VERSION_4_6_0="no"
   fi
+  AC_MSG_RESULT([$GCC_MIN_VERSION_4_6_0])
 else
+  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0])
   # No version file, assume it is trunk
   GCC_MIN_VERSION_4_3_0="yes"
   GCC_MIN_VERSION_4_5_0="yes"
   GCC_MIN_VERSION_4_6_0="yes"
+  AC_MSG_RESULT([no version file, assuming yes])
 fi
 AC_SUBST(GCC_MIN_VERSION_4_3_0)
 AC_SUBST(GCC_MIN_VERSION_4_5_0)
@@ -413,15 +421,17 @@ AC_ARG_WITH([cloog-version],
      CLOOG_VERSION="$withval"
    fi],
 [CLOOG_VERSION="default"])
+AC_MSG_RESULT($CLOOG_VERSION)
 if test "$CLOOG_VERSION" = "default"; then
+  AC_MSG_CHECKING([Which version of cloog to build under gcc 4.6+ condition $GCC_MIN_VERSION_4_6_0])
   # Default is 0.15.9 for gcc 4.5 and below, 0.16.3 for gcc 4.6 and higher
   if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
     CLOOG_VERSION="0.16.3"
   else
     CLOOG_VERSION="0.15.9"
   fi
+  AC_MSG_RESULT([$CLOOG_VERSION])
 fi
-AC_MSG_RESULT($CLOOG_VERSION)
 case $CLOOG_VERSION in
   0.15*)
     # CLooG/PPL relies on the PPL for version 0.15.x

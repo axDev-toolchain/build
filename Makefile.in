@@ -273,7 +273,7 @@ BINUTILS_CONFIG_ARGS=--prefix=$(prefix) \
 	$(baseargs) --disable-shared --disable-werror
 ifeq ($(ENABLE_GRAPHITE),yes)
 BINUTILS_CONFIG_ARGS+= --with-cloog=${CLOOG_DIR} --with-gmp=${GMP_DIR} \
-	--disable-ppl-version-check --disable-cloog-version-check
+	--disable-ppl-version-check --disable-cloog-version-check $(CLOOG_BACKEND)
 # link to the static C++ runtime to avoid depending on the host version
 BINUTILS_CONFIG_ARGS+= \
 	'--with-host-libstdcxx=-static-libgcc \

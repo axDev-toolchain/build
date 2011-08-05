@@ -603,9 +603,7 @@ config-host-cloog: stmp-config-host-cloog
 CLOOG_CONFIG_ARGS=$(baseargs) --prefix=$(TEMP_INSTALLDIR) --disable-shared \
        --target=${target_alias} \
        --host=${host} --build=${build} \
-       --disable-nls \
-       --with-gmp=$(GMP_DIR) \
-       --with-gmp-prefix=$(GMP_DIR)
+       --disable-nls
 # for cloog-ppl version 0.15.x, ppl is required.
 ifneq ($(findstring ppl-,$(CLOOG_VERSION)),)
 CLOOG_TARGET = libcloog.la
@@ -617,9 +615,10 @@ stmp-install-host-ppl-workaround:
 	sed -i -e 's/PPL_VERSION_MINOR 11/PPL_VERSION_MINOR 10/' \
 	 $(PPL_DIR)/include/ppl_c.h
 	$(STAMP) $@
-CLOOG_CONFIG_ARGS+= --with-ppl=$(PPL_DIR)
+CLOOG_CONFIG_ARGS+= --with-gmp=$(GMP_DIR) --with-ppl=$(PPL_DIR)
 else
 CLOOG_TARGET = libcloog-isl.la
+CLOOG_CONFIG_ARGS+= --with-gmp-prefix=$(GMP_DIR)
 endif
 stmp-config-host-cloog: config.status stmp-install-host-gmp
 	([ -d ${CLOOG_VERSION} ] || \

@@ -53,6 +53,8 @@ TOPLEVEL_CONFIGURE_ARGUMENTS:=@TOPLEVEL_CONFIGURE_ARGUMENTS@
 baseargs = @baseargs@
 GCC_MIN_VERSION_4_3_0:=@GCC_MIN_VERSION_4_3_0@
 GCC_MIN_VERSION_4_5_0:=@GCC_MIN_VERSION_4_5_0@
+GCC_MIN_VERSION_4_6_0:=@GCC_MIN_VERSION_4_5_0@
+CLOOG_BACKEND:=@CLOOG_BACKEND@
 ENABLE_GRAPHITE:=@ENABLE_GRAPHITE@
 PACKAGE_TO_SRCDIR:=@package_to_srcdir@
 BUILD_ANDROID_GCC:=@BUILD_ANDROID_GCC@
@@ -383,14 +385,11 @@ endif
 # For gcc 4.5+ with graphite optimization, cloog and ppl are required.
 ifeq ($(ENABLE_GRAPHITE),yes)
 GCC_CONFIG_ARGS += --with-cloog=${CLOOG_DIR} --with-ppl=${PPL_DIR} \
-	--disable-ppl-version-check --disable-cloog-version-check
+	--disable-ppl-version-check --disable-cloog-version-check $(CLOOG_BACKEND)
 # link to the static C++ runtime to avoid depending on the host version
 GCC_CONFIG_ARGS += \
 	'--with-host-libstdcxx=-static-libgcc \
 	 -Wl,-Bstatic,-lstdc++,-Bdynamic -lm'
-ifeq ($(GCC_MIN_VERSION_4_5_0),yes)
-GCC_CONFIG_ARGS += " $(CLOOG_BACKEND)"
-endif
 endif
 
 # Add Android specific gcc options.

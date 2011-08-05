@@ -399,13 +399,8 @@ AC_ARG_WITH([ppl-version],
 [PPL_VERSION="0.11.2"])
 AC_MSG_RESULT($PPL_VERSION)
 ANDROID_CHECK_PACKAGE(ppl-${PPL_VERSION})
-if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
-# With gcc 4.6+, we can use ISL as a (better) backend
-CLOOG_BACKEND="--enable-cloog-backend=isl"
-fi
 fi
 AC_SUBST(PPL_VERSION)
-AC_SUBST(CLOOG_BACKEND)
 
 if test "$ENABLE_GRAPHITE" == "yes"; then
 # cloog-ppl or cloog version (default is 0.15.9)
@@ -413,11 +408,19 @@ if test "$ENABLE_GRAPHITE" == "yes"; then
 AC_MSG_CHECKING([cloog version])
 AC_ARG_WITH([cloog-version],
   [  --with-cloog-version=VERSION
-                          use cloog-VERSION (default is 0.15.9)],
+                          use cloog-VERSION],
   [if test x"$withval" != x ; then
      CLOOG_VERSION="$withval"
    fi],
-[CLOOG_VERSION="0.15.9"])
+[CLOOG_VERSION="default"])
+if test "$CLOOG_VERSION" = "default"; then
+  # Default is 0.15.9 for gcc 4.5 and below, 0.16.3 for gcc 4.6 and higher
+  if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
+    CLOOG_VERSION="0.16.3"
+  else
+    CLOOG_VERSION="0.15.9"
+  fi
+fi
 AC_MSG_RESULT($CLOOG_VERSION)
 case $CLOOG_VERSION in
   0.15*)
@@ -426,10 +429,12 @@ case $CLOOG_VERSION in
     ;;
   0.16*)
     # CLooG 0.16.x has its own embedded polyhedral library
+    CLOOG_BACKEND="--enable-cloog-backend=isl"
     ;;
   *)
     AC_MSG_ERROR(Unsupported cloog version);
 esac
+AC_SUBST(CLOOG_BACKEND)
 ANDROID_CHECK_PACKAGE(cloog-${CLOOG_VERSION})
 fi
 AC_SUBST(CLOOG_VERSION)

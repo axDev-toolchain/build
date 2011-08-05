@@ -1310,7 +1310,7 @@ Optional Packages:
   --with-ppl-version=VERSION
                           use ppl-VERSION (default is 0.11.2)
   --with-cloog-version=VERSION
-                          use cloog-VERSION (default is 0.15.9)
+                          use cloog-VERSION
   --with-gdb-version=VERSION
                           use gdb-VERSION (default is 6.6)
   --with-sysroot=DIR
@@ -2569,12 +2569,7 @@ if test \( ! -d $srcdir/../$tool/ppl-${PPL_VERSION} \) -a \( x"$version" != x"no
     as_fn_error $? "'package ppl-${PPL_VERSION} does not exist.'" "$LINENO" 5
   fi
 fi
-if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
-# With gcc 4.6+, we can use ISL as a (better) backend
-CLOOG_BACKEND="--enable-cloog-backend=isl"
 fi
-fi
-
 
 
 if test "$ENABLE_GRAPHITE" == "yes"; then
@@ -2589,9 +2584,17 @@ if test "${with_cloog_version+set}" = set; then :
      CLOOG_VERSION="$withval"
    fi
 else
-  CLOOG_VERSION="0.15.9"
+  CLOOG_VERSION="default"
 fi
 
+if test "$CLOOG_VERSION" = "default"; then
+  # Default is 0.15.9 for gcc 4.5 and below, 0.16.3 for gcc 4.6 and higher
+  if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
+    CLOOG_VERSION="0.16.3"
+  else
+    CLOOG_VERSION="0.15.9"
+  fi
+fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CLOOG_VERSION" >&5
 $as_echo "$CLOOG_VERSION" >&6; }
 case $CLOOG_VERSION in
@@ -2601,10 +2604,12 @@ case $CLOOG_VERSION in
     ;;
   0.16*)
     # CLooG 0.16.x has its own embedded polyhedral library
+    CLOOG_BACKEND="--enable-cloog-backend=isl"
     ;;
   *)
     as_fn_error $? "Unsupported cloog version" "$LINENO" 5;
 esac
+
 x=cloog-${CLOOG_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x" | sed -e 's/[^-]*-//'); \
 if test \( ! -d $srcdir/../$tool/cloog-${CLOOG_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/cloog-${CLOOG_VERSION}.tar ; then

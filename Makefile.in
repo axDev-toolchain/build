@@ -604,7 +604,8 @@ CLOOG_CONFIG_ARGS=$(baseargs) --prefix=$(TEMP_INSTALLDIR) --disable-shared \
        --target=${target_alias} \
        --host=${host} --build=${build} \
        --disable-nls \
-       --with-gmp=$(GMP_DIR)
+       --with-gmp=$(GMP_DIR) \
+       --with-gmp-prefix=$(GMP_DIR)
 # for cloog-ppl version 0.15.x, ppl is required.
 ifneq ($(findstring ppl-,$(CLOOG_VERSION)),)
 CLOOG_TARGET = libcloog.la

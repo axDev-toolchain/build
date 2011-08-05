@@ -635,10 +635,10 @@ stmp-build-host-cloog: stmp-config-host-cloog
 build-host-cloog: stmp-build-host-cloog
 stmp-install-host-cloog: stmp-build-host-cloog
 	$(MAKE) -C ${CLOOG_VERSION} install-libLTLIBRARIES \
-		install-pkgincludeHEADERS && \
+		install-pkgincludeHEADERS
 ifneq ($(findstring ppl-,$(CLOOG_VERSION)),)
 	$(MAKE) -C ${CLOOG_VERSION}/isl install-libLTLIBRARIES \
-		install-pkgincludeHEADERS && \
+		install-pkgincludeHEADERS
 endif
 	$(STAMP) $@
 install-host-cloog: stmp-install-host-cloog

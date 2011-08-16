@@ -53,7 +53,7 @@ TOPLEVEL_CONFIGURE_ARGUMENTS:=@TOPLEVEL_CONFIGURE_ARGUMENTS@
 baseargs = @baseargs@
 GCC_MIN_VERSION_4_3_0:=@GCC_MIN_VERSION_4_3_0@
 GCC_MIN_VERSION_4_5_0:=@GCC_MIN_VERSION_4_5_0@
-GCC_MIN_VERSION_4_6_0:=@GCC_MIN_VERSION_4_5_0@
+GCC_MIN_VERSION_4_6_0:=@GCC_MIN_VERSION_4_6_0@
 CLOOG_BACKEND:=@CLOOG_BACKEND@
 ENABLE_GRAPHITE:=@ENABLE_GRAPHITE@
 PACKAGE_TO_SRCDIR:=@package_to_srcdir@
@@ -204,7 +204,7 @@ ifeq ($(ENABLE_GRAPHITE),yes)
 build: install-host-cloog
 endif
 build: build-target-binutils build-host-libbfd build-target-gcc \
-	build-target-gdb
+	build-target-gdb remove-bionic
 
 install: install-target-binutils install-host-libbfd install-target-gcc \
 	install-target-gdb
@@ -372,13 +372,13 @@ GCC_CONFIG_ARGS=--prefix=$(prefix) \
 # For gcc versions 4.3.0 and later, gmp and mpfr are required.
 # Also build libgcc is a seperate sub-target in 4.3.0+.
 ifeq ($(GCC_MIN_VERSION_4_3_0),yes)
-stmp-config-target-gcc: stmp-install-host-gmp stmp-install-host-mpfr
+stmp-config-bootstrap-gcc: stmp-install-host-gmp stmp-install-host-mpfr
 GCC_CONFIG_ARGS += --with-gmp=$(GMP_DIR) --with-mpfr=$(MPFR_DIR)
 endif
 
 # For gcc versions 4.5.0 and higher, mpc is required.
 ifeq ($(GCC_MIN_VERSION_4_5_0),yes)
-stmp-config-target-gcc: stmp-install-host-mpc
+stmp-config-bootstrap-gcc: stmp-install-host-mpc
 GCC_CONFIG_ARGS += --with-mpc=$(MPC_DIR)
 endif
 
@@ -399,18 +399,15 @@ endif
 # Target indenpendent Android gcc options.
 ifeq ($(BUILD_ANDROID_GCC),yes)
 GCC_CONFIG_ARGS += $(GCC_CONFIG_LIBSTDCXX_V3) --disable-libssp \
-	--enable-threads --disable-nls --disable-libmudflap --disable-libgomp \
+	--disable-nls --disable-libmudflap \
 	--disable-libstdc__-v3 --disable-sjlj-exceptions --disable-shared \
-	--disable-tls --disable-libquadmath
+	--disable-libquadmath
 CFLAGS_FOR_TARGET += -DTARGET_POSIX_IO -fno-short-enums
 # We need to find pthread.h to build libgcc with threading support.
-# Fortunately bionic pretty much relies on static headers, so we can skip
-# the step of building a bootstrap compiler and using that to build
-# bionic.
 # -include .../sys/limits.h is a workaround for Bionic's ptherad.h requiring
 # LONG_BIT, which usually comes in through limits.h -- but gcc has its own
 # version of that which fails to include sys/limits.h
-CFLAGS_FOR_TARGET += -isystem $(abs_srcdir)/../bionic/libc/include -isystem $(abs_srcdir)/../bionic/libc/kernel/common -isystem $(abs_srcdir)/../bionic/libc/kernel/arch-$(target_cpu) -isystem $(abs_srcdir)/../bionic/libc/arch-$(target_cpu)/include -include $(abs_srcdir)/../bionic/libc/include/sys/limits.h
+CFLAGS_FOR_TARGET += -isystem $(abs_srcdir)/../android/bionic/libc/include -isystem $(abs_srcdir)/../android/bionic/libc/kernel/common -isystem $(abs_srcdir)/../android/bionic/libc/kernel/arch-$(target_cpu) -isystem $(abs_srcdir)/../android/bionic/libc/arch-$(target_cpu)/include -include $(abs_srcdir)/../android/bionic/libc/include/sys/limits.h
 # ARM specific options.
 ifeq ($(target_cpu),arm)
 GCC_CONFIG_ARGS += --with-float=soft --with-fpu=vfp --with-arch=armv5te \
@@ -425,8 +422,65 @@ endif
 # We add the baseargs and the end so that they override any default args
 GCC_CONFIG_ARGS += $(baseargs)
 
+ifeq ($(BUILD_ANDROID_GCC),yes)
+stmp-build-target-bionic: install-target-binutils install-bootstrap-gcc
+	ONE_SHOT_MAKEFILE=external/elfutils/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
+	ONE_SHOT_MAKEFILE=external/elfcopy/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
+	ONE_SHOT_MAKEFILE=build/libs/host/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
+	ONE_SHOT_MAKEFILE=build/tools/acp/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
+	ONE_SHOT_MAKEFILE=build/tools/soslim/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
+	ONE_SHOT_MAKEFILE=bionic/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
+	cp $(abs_srcdir)/../android/out/target/product/pandaboard/obj/lib/* $(prefix)/arm-linux-androideabi/lib/
+	ln -sf crtbegin_so.o $(prefix)/arm-linux-androideabi/lib/crtbegin_dynamic.o
+	touch dummy.c
+	$(prefix)/bin/${cur_target}-gcc -o dummy.o -c dummy.c
+	$(prefix)/bin/${cur_target}-ar cru $(prefix)/arm-linux-androideabi/lib/libpthread.a dummy.o
+	$(prefix)/bin/${cur_target}-ranlib $(prefix)/arm-linux-androideabi/lib/libpthread.a
+	$(STAMP) $@
+
+# Remove bionic after the final compiler has been built - we should continue
+# to build bionic in the Android build rather than the toolchain build so it
+# is compiled with the optimal settings for the target board.
+remove-bionic:
+	rm -f $(prefix)/arm-linux-androideabi/lib/libc* $(prefix)/arm-linux-androideabi/lib/libm.so $(prefix)/arm-linux-androideabi/lib/libdl.so $(prefix)/arm-linux-android-eabi/lib/crt*.o
+	rm -f stmp-build-target-bionic
+else
+stmp-build-target-bionic:
+
+remove-bionic:
+endif
+
 # We have to add -mandroid in target CFLAGS and CXXFLAGS
-stmp-config-target-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
+stmp-config-bootstrap-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
+	([ -d bootstrap-${GCC_VERSION} ] || \
+	  mkdir bootstrap-${GCC_VERSION}) && \
+	($(canadian_env) \
+	 cd bootstrap-${GCC_VERSION} ; \
+	 $(TARGET_BINUTILS_EXPORTS) ; \
+	 export CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" ; \
+	 export CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" ; \
+	 export LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" ; \
+	 export CFLAGS="-O2 -m32" ; \
+	 export CXXFLAGS="-O2 -m32" ; \
+	 sed -i -e '/#include <limits.h>/i#include <sys/mman.h>' $(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c ; \
+	 $(call find-package-srcdir, ${GCC_VERSION})/configure \
+	   $(GCC_CONFIG_ARGS) --enable-threads --disable-tls --disable-libgomp) && \
+	$(STAMP) $@
+build-bootstrap-gcc: stmp-build-bootstrap-gcc
+stmp-build-bootstrap-gcc: stmp-config-bootstrap-gcc
+	($(canadian_env) \
+	 $(MAKE) -C bootstrap-${GCC_VERSION} \
+		CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
+		CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" \
+		LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" \
+		$(gcc_build_target)) \
+	&& $(STAMP) $@
+install-bootstrap-gcc-gcc: stmp-build-bootstrap-gcc
+	($(canadian_env) \
+	 $(MAKE) -C bootstrap-${GCC_VERSION} $(gcc_install_target))
+install-bootstrap-gcc: install-bootstrap-gcc-gcc
+
+stmp-config-target-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils stmp-build-target-bionic
 	([ -d ${GCC_VERSION} ] || \
 	  mkdir ${GCC_VERSION}) && \
 	($(canadian_env) \
@@ -435,8 +489,10 @@ stmp-config-target-gcc: config.status stmp-install-host-ppl stmp-build-target-bi
 	 export CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" ; \
 	 export CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" ; \
 	 export LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" ; \
+	 export CFLAGS="-O2 -m32" ; \
+	 export CXXFLAGS="-O2 -m32" ; \
 	 $(call find-package-srcdir, ${GCC_VERSION})/configure \
-	   $(GCC_CONFIG_ARGS)) && \
+	   $(GCC_CONFIG_ARGS) --enable-threads --enable-tls --enable-libgomp) && \
 	$(STAMP) $@
 build-target-gcc: stmp-build-target-gcc
 stmp-build-target-gcc: stmp-config-target-gcc
@@ -586,7 +642,7 @@ config-host-ppl: stmp-config-host-ppl
 PPL_CONFIG_ARGS=$(baseargs) --prefix=$(TEMP_INSTALLDIR) --disable-shared \
 		--target=${target_alias} \
 		--host=${host} --build=${build} \
-		--disable-nls --with-gmp-prefix=$(GMP_DIR) \
+		--disable-nls --with-libgmp-prefix=$(GMP_DIR) \
 		--disable-watchdog \
 		--disable-ppl_lcdd --disable-ppl_lpsol --disable-ppl_pips
 stmp-config-host-ppl: config.status stmp-install-host-gmp
@@ -594,6 +650,8 @@ stmp-config-host-ppl: config.status stmp-install-host-gmp
 	 mkdir ${PPL_VERSION}) && \
 	($(canadian_env) \
 	 cd ${PPL_VERSION} ; \
+         export CFLAGS="${CFLAGS} -m32 -I$(GMP_DIR)/include" ; \
+         export CXXFLAGS="${CFLAGS} -m32 -I$(GMP_DIR)/include" ; \
 	$(call find-package-srcdir, ${PPL_VERSION})/configure \
 	 $(PPL_CONFIG_ARGS)) && \
 	$(STAMP) $@

@@ -258,7 +258,7 @@ else
 fi
 
 ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
-  --prefix=${ARG_PREFIX_DIR} --target=arm-eabi \
+  --prefix=${ARG_PREFIX_DIR} --target=arm-linux-androideabi \
   --disable-docs --disable-nls \
   --host=${BUILD_HOST} --build=${BUILD_HOST} \
   ${BUILD_SYSROOT} \

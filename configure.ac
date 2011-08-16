@@ -27,7 +27,7 @@ AC_CANONICAL_SYSTEM
 
 GDB_TARGET=$target
 case $target in
-  arm-unknown-linux-androideabi | arm-unknown-eabi)
+  arm-unknown-linux-androideabi | arm-unknown-eabi | arm-linux-androideabi)
     BUILD_ANDROID_GCC=yes
     GDB_TARGET=arm-elf-linux
     ;;

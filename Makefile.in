@@ -203,8 +203,13 @@ all: build
 ifeq ($(ENABLE_GRAPHITE),yes)
 build: install-host-cloog
 endif
+ifneq (, $(findstring android,$(cur_target)))
 build: build-target-binutils build-host-libbfd build-target-gcc \
 	build-target-gdb remove-bionic
+else
+build: build-target-binutils build-host-libbfd build-bootstrap-gcc \
+	install-bootstrap-gcc build-target-gdb
+endif
 
 install: install-target-binutils install-host-libbfd install-target-gcc \
 	install-target-gdb

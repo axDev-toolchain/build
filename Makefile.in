@@ -500,7 +500,7 @@ stmp-config-target-gcc: config.status stmp-install-host-ppl stmp-build-target-bi
 	 export CFLAGS="-O2 -m32" ; \
 	 export CXXFLAGS="-O2 -m32" ; \
 	 $(call find-package-srcdir, ${GCC_VERSION})/configure \
-	   $(GCC_CONFIG_ARGS) --enable-threads --enable-tls --enable-libgomp) && \
+	   $(GCC_CONFIG_ARGS) --enable-threads --disable-tls --enable-libgomp) && \
 	$(STAMP) $@
 build-target-gcc: stmp-build-target-gcc
 stmp-build-target-gcc: stmp-config-target-gcc

@@ -206,13 +206,16 @@ endif
 ifneq (, $(findstring android,$(cur_target)))
 build: build-target-binutils build-host-libbfd build-target-gcc \
 	build-target-gdb remove-bionic
-else
-build: build-target-binutils build-host-libbfd build-bootstrap-gcc \
-	install-bootstrap-gcc build-target-gdb
-endif
 
 install: install-target-binutils install-host-libbfd install-target-gcc \
 	install-target-gdb
+else
+build: build-target-binutils build-host-libbfd build-bootstrap-gcc \
+	build-target-gdb
+
+install: install-target-binutils install-host-libbfd install-bootstrap-gcc \
+	install-target-gdb
+endif
 
 # To support canadian cross build we need to build build->target toolchain
 # as well as final host->target toolchain.

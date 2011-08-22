@@ -325,7 +325,7 @@ else
   GCC_MIN_VERSION_4_3_0="no"
 fi
 AC_MSG_RESULT([$GCC_MIN_VERSION_4_3_0])
-AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.4.0])
+AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0])
 if test "$GCC_MAJOR" -gt 4 -o \
             \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 5 \) ; then
   GCC_MIN_VERSION_4_5_0="yes"
@@ -333,7 +333,7 @@ else
   GCC_MIN_VERSION_4_5_0="no"
 fi
 AC_MSG_RESULT([$GCC_MIN_VERSION_4_5_0])
-AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0])
+AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.6.0])
 if test "$GCC_MAJOR" -gt 4 -o \
           \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 6 \) ; then
   GCC_MIN_VERSION_4_6_0="yes"

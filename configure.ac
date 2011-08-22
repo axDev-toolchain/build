@@ -291,6 +291,7 @@ ANDROID_CHECK_PACKAGE(gcc-${GCC_VERSION})
 
 # figure out if we need to build gmp and mpfr for gcc 4.3.0+ 
 gcc_version_file="${srcdir}/../gcc/gcc-${GCC_VERSION}/gcc/BASE-VER"
+test -f ${gcc_version_file} || gcc_version_file="${srcdir}/temp-src/gcc-${GCC_VERSION}/gcc/BASE-VER"
 if test -f "${gcc_version_file}"; then
   GCC_MAJOR=`head -n 1 $gcc_version_file | sed  -e "s/[[^0-9]].*//"`
   GCC_MINOR=`head -n 1 $gcc_version_file | \

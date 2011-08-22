@@ -2333,49 +2333,66 @@ fi
 gcc_version_file="${srcdir}/../gcc/gcc-${GCC_VERSION}/gcc/BASE-VER"
 test -f ${gcc_version_file} || gcc_version_file="${srcdir}/temp-src/gcc-${GCC_VERSION}/gcc/BASE-VER"
 if test -f "${gcc_version_file}"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking gcc version based on version file ${gcc_version_file}" >&5
+$as_echo_n "checking gcc version based on version file ${gcc_version_file}... " >&6; }
   GCC_MAJOR=`head -n 1 $gcc_version_file | sed  -e "s/[^0-9].*//"`
   GCC_MINOR=`head -n 1 $gcc_version_file | \
 	    sed  -e "s/^[0-9]*\.//" -e "s/[^0-9].*//"`
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0" >&5
-$as_echo_n "checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0... " >&6; }
-  if test "$GCC_MAJOR" -gt 4 -o \
-          \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 3 \) ; then
-    GCC_MIN_VERSION_4_3_0="yes"
-  else
-    GCC_MIN_VERSION_4_3_0="no"
-  fi
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MIN_VERSION_4_3_0" >&5
-$as_echo "$GCC_MIN_VERSION_4_3_0" >&6; }
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.4.0" >&5
-$as_echo_n "checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.4.0... " >&6; }
-  if test "$GCC_MAJOR" -gt 4 -o \
-              \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 5 \) ; then
-    GCC_MIN_VERSION_4_5_0="yes"
-  else
-    GCC_MIN_VERSION_4_5_0="no"
-  fi
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MIN_VERSION_4_5_0" >&5
-$as_echo "$GCC_MIN_VERSION_4_5_0" >&6; }
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0" >&5
-$as_echo_n "checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0... " >&6; }
-  if test "$GCC_MAJOR" -gt 4 -o \
-              \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 6 \) ; then
-    GCC_MIN_VERSION_4_6_0="yes"
-  else
-    GCC_MIN_VERSION_4_6_0="no"
-  fi
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MIN_VERSION_4_6_0" >&5
-$as_echo "$GCC_MIN_VERSION_4_6_0" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MAJOR . $GCC_MINOR" >&5
+$as_echo "$GCC_MAJOR . $GCC_MINOR" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0" >&5
-$as_echo_n "checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0... " >&6; }
-  # No version file, assume it is trunk
-  GCC_MIN_VERSION_4_3_0="yes"
-  GCC_MIN_VERSION_4_5_0="yes"
-  GCC_MIN_VERSION_4_6_0="yes"
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no version file, assuming yes" >&5
-$as_echo "no version file, assuming yes" >&6; }
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking gcc version based on version string ${GCC_VERSION}" >&5
+$as_echo_n "checking gcc version based on version string ${GCC_VERSION}... " >&6; }
+  if echo ${GCC_VERSION} |grep -qE '^linaro'; then
+    GCC_MAJORMINOR=`echo ${GCC_VERSION} |cut -d- -f2`
+    GCC_MAJOR=`echo ${GCC_MAJORMINOR} |cut -d. -f1`
+    GCC_MINOR=`echo ${GCC_MAJORMINOR} |cut -d. -f2`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MAJOR . $GCC_MINOR" >&5
+$as_echo "$GCC_MAJOR . $GCC_MINOR" >&6; }
+  elif echo ${GCC_VERSION} |grep -qE '0-9\.0-9'; then
+    GCC_MAJORMINOR=`echo ${GCC_VERSION} |cut -d- -f2`
+    GCC_MAJOR=`echo ${GCC_MAJORMINOR} |cut -d. -f1`
+    GCC_MINOR=`echo ${GCC_MAJORMINOR} |cut -d. -f2`
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MAJOR . $GCC_MINOR" >&5
+$as_echo "$GCC_MAJOR . $GCC_MINOR" >&6; }
+  else
+    # No version file, assume it is trunk
+    GCC_MAJOR=4
+    GCC_MINOR=7
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: No version found, assuming trunk" >&5
+$as_echo "No version found, assuming trunk" >&6; }
+  fi
 fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc is at least 4.3.0" >&5
+$as_echo_n "checking if gcc is at least 4.3.0... " >&6; }
+if test "$GCC_MAJOR" -gt 4 -o \
+      \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 3 \) ; then
+  GCC_MIN_VERSION_4_3_0="yes"
+else
+  GCC_MIN_VERSION_4_3_0="no"
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MIN_VERSION_4_3_0" >&5
+$as_echo "$GCC_MIN_VERSION_4_3_0" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.4.0" >&5
+$as_echo_n "checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.4.0... " >&6; }
+if test "$GCC_MAJOR" -gt 4 -o \
+            \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 5 \) ; then
+  GCC_MIN_VERSION_4_5_0="yes"
+else
+  GCC_MIN_VERSION_4_5_0="no"
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MIN_VERSION_4_5_0" >&5
+$as_echo "$GCC_MIN_VERSION_4_5_0" >&6; }
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0" >&5
+$as_echo_n "checking if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0... " >&6; }
+if test "$GCC_MAJOR" -gt 4 -o \
+          \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 6 \) ; then
+  GCC_MIN_VERSION_4_6_0="yes"
+else
+  GCC_MIN_VERSION_4_6_0="no"
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $GCC_MIN_VERSION_4_6_0" >&5
+$as_echo "$GCC_MIN_VERSION_4_6_0" >&6; }
 
 
 

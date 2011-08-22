@@ -293,41 +293,54 @@ ANDROID_CHECK_PACKAGE(gcc-${GCC_VERSION})
 gcc_version_file="${srcdir}/../gcc/gcc-${GCC_VERSION}/gcc/BASE-VER"
 test -f ${gcc_version_file} || gcc_version_file="${srcdir}/temp-src/gcc-${GCC_VERSION}/gcc/BASE-VER"
 if test -f "${gcc_version_file}"; then
+  AC_MSG_CHECKING([gcc version based on version file ${gcc_version_file}])
   GCC_MAJOR=`head -n 1 $gcc_version_file | sed  -e "s/[[^0-9]].*//"`
   GCC_MINOR=`head -n 1 $gcc_version_file | \
 	    sed  -e "s/^[[0-9]]*\.//" -e "s/[[^0-9]].*//"`
-  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0])
-  if test "$GCC_MAJOR" -gt 4 -o \
-          \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 3 \) ; then
-    GCC_MIN_VERSION_4_3_0="yes"
-  else
-    GCC_MIN_VERSION_4_3_0="no"
-  fi
-  AC_MSG_RESULT([$GCC_MIN_VERSION_4_3_0])
-  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.4.0])
-  if test "$GCC_MAJOR" -gt 4 -o \
-              \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 5 \) ; then
-    GCC_MIN_VERSION_4_5_0="yes"
-  else
-    GCC_MIN_VERSION_4_5_0="no"
-  fi
-  AC_MSG_RESULT([$GCC_MIN_VERSION_4_5_0])
-  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0])
-  if test "$GCC_MAJOR" -gt 4 -o \
-              \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 6 \) ; then
-    GCC_MIN_VERSION_4_6_0="yes"
-  else
-    GCC_MIN_VERSION_4_6_0="no"
-  fi
-  AC_MSG_RESULT([$GCC_MIN_VERSION_4_6_0])
+  AC_MSG_RESULT([$GCC_MAJOR . $GCC_MINOR])
 else
-  AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.3.0])
-  # No version file, assume it is trunk
-  GCC_MIN_VERSION_4_3_0="yes"
-  GCC_MIN_VERSION_4_5_0="yes"
-  GCC_MIN_VERSION_4_6_0="yes"
-  AC_MSG_RESULT([no version file, assuming yes])
+  AC_MSG_CHECKING([gcc version based on version string ${GCC_VERSION}])
+  if echo ${GCC_VERSION} |grep -qE '^linaro'; then
+    GCC_MAJORMINOR=`echo ${GCC_VERSION} |cut -d- -f2`
+    GCC_MAJOR=`echo ${GCC_MAJORMINOR} |cut -d. -f1`
+    GCC_MINOR=`echo ${GCC_MAJORMINOR} |cut -d. -f2`
+    AC_MSG_RESULT([$GCC_MAJOR . $GCC_MINOR])
+  elif echo ${GCC_VERSION} |grep -qE '[0-9]\.[0-9]'; then
+    GCC_MAJORMINOR=`echo ${GCC_VERSION} |cut -d- -f2`
+    GCC_MAJOR=`echo ${GCC_MAJORMINOR} |cut -d. -f1`
+    GCC_MINOR=`echo ${GCC_MAJORMINOR} |cut -d. -f2`
+    AC_MSG_RESULT([$GCC_MAJOR . $GCC_MINOR])
+  else
+    # No version file, assume it is trunk
+    GCC_MAJOR=4
+    GCC_MINOR=7
+    AC_MSG_RESULT([No version found, assuming trunk])
+  fi
 fi
+AC_MSG_CHECKING([if gcc is at least 4.3.0])
+if test "$GCC_MAJOR" -gt 4 -o \
+      \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 3 \) ; then
+  GCC_MIN_VERSION_4_3_0="yes"
+else
+  GCC_MIN_VERSION_4_3_0="no"
+fi
+AC_MSG_RESULT([$GCC_MIN_VERSION_4_3_0])
+AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.4.0])
+if test "$GCC_MAJOR" -gt 4 -o \
+            \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 5 \) ; then
+  GCC_MIN_VERSION_4_5_0="yes"
+else
+  GCC_MIN_VERSION_4_5_0="no"
+fi
+AC_MSG_RESULT([$GCC_MIN_VERSION_4_5_0])
+AC_MSG_CHECKING([if gcc $GCC_MAJOR . $GCC_MINOR is at least 4.5.0])
+if test "$GCC_MAJOR" -gt 4 -o \
+          \( "$GCC_MAJOR" -eq 4 -a "$GCC_MINOR" -ge 6 \) ; then
+  GCC_MIN_VERSION_4_6_0="yes"
+else
+  GCC_MIN_VERSION_4_6_0="no"
+fi
+AC_MSG_RESULT([$GCC_MIN_VERSION_4_6_0])
 AC_SUBST(GCC_MIN_VERSION_4_3_0)
 AC_SUBST(GCC_MIN_VERSION_4_5_0)
 AC_SUBST(GCC_MIN_VERSION_4_6_0)

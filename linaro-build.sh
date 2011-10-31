@@ -268,7 +268,7 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   --with-binutils-version=2.21.53.0.2 \
   \
   --with-gmp-version=5.0.2 \
-  --with-mpfr-version=3.0.1 \
+  --with-mpfr-version=3.1.0 \
   --with-mpc-version=0.9 \
   \
   ${LINARO_BUILD_EXTRA_CONFIGURE_FLAGS}

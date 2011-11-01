@@ -458,62 +458,72 @@ stmp-build-target-bionic:
 remove-bionic:
 endif
 
-# We have to add -mandroid in target CFLAGS and CXXFLAGS
-stmp-config-bootstrap-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
-	([ -d bootstrap-${GCC_VERSION} ] || \
-	  mkdir bootstrap-${GCC_VERSION}) && \
+# Usage: $(call config-gcc,TYPE,CONFIGURE_ARGS)
+# Where
+# 	TYPE aka $(1) is bootstrap or target
+#	CONFIGURE_ARGS aka $(2) is extra arguments passed to configure
+define config-gcc =
+	([ -d gcc-$(1)-$(GCC_VERSION) ] || \
+	  mkdir gcc-$(1)-$(GCC_VERSION)) && \
 	($(canadian_env) \
-	 cd bootstrap-${GCC_VERSION} ; \
+	 cd gcc-$(1)-${GCC_VERSION} ; \
 	 $(TARGET_BINUTILS_EXPORTS) ; \
 	 export CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" ; \
 	 export CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" ; \
 	 export LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" ; \
 	 export CFLAGS="-O2 -m32" ; \
 	 export CXXFLAGS="-O2 -m32" ; \
-	 sed -i -e '/#include <limits.h>/i#include <sys/mman.h>' $(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c ; \
-	 $(call find-package-srcdir, ${GCC_VERSION})/configure \
-	   $(GCC_CONFIG_ARGS) --enable-threads --disable-tls --disable-libgomp) && \
+	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
+	  $(GCC_CONFIG_ARGS) --enable-threads --enable-tls $(2)) && \
 	$(STAMP) $@
+endef
+
+# Usage: $(call build-gcc,TYPE)
+# Where
+# 	TYPE aka $(1) is bootstrap or target
+define build-gcc =
+	($(canadian_env) \
+	 $(MAKE) -C gcc-$(1)-$(GCC_VERSION) \
+	  CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
+	  CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" \
+	  LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" \
+	  $(gcc_build_target)) && \
+	$(STAMP) $@
+endef
+
+# Usage: $(call install-gcc,TYPE)
+# Where
+# 	TYPE aka $(1) is bootstrap or target
+define install-gcc =
+	($(canadian_env) \
+	 $(MAKE) -C gcc-$(1)-$(GCC_VERSION) $(gcc_install_target))
+endef
+
+
+patch-libgomp-for-android: config.status
+	 sed -i -e '/#include <limits.h>/i#include <sys/mman.h>' temp-src/$(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c ; \
+
+stmp-patch-libgomp-for-android: patch-libgomp-for-android
+	$(STAMP) $@
+
+# We have to add -mandroid in target CFLAGS and CXXFLAGS
+stmp-config-bootstrap-gcc: config.status stmp-patch-libgomp-for-android stmp-install-host-ppl stmp-build-target-binutils
+	$(call config-gcc,bootstrap,--disable-libgomp)
 build-bootstrap-gcc: stmp-build-bootstrap-gcc
 stmp-build-bootstrap-gcc: stmp-config-bootstrap-gcc
-	($(canadian_env) \
-	 $(MAKE) -C bootstrap-${GCC_VERSION} \
-		CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
-		CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" \
-		LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" \
-		$(gcc_build_target)) \
-	&& $(STAMP) $@
+	$(call build-gcc,bootstrap)
 install-bootstrap-gcc-gcc: stmp-build-bootstrap-gcc
-	($(canadian_env) \
-	 $(MAKE) -C bootstrap-${GCC_VERSION} $(gcc_install_target))
+	$(call install-gcc,bootstrap)
 install-bootstrap-gcc: install-bootstrap-gcc-gcc
 
-stmp-config-target-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils stmp-build-target-bionic
-	([ -d ${GCC_VERSION} ] || \
-	  mkdir ${GCC_VERSION}) && \
-	($(canadian_env) \
-	 cd ${GCC_VERSION} ; \
-	 $(TARGET_BINUTILS_EXPORTS) ; \
-	 export CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" ; \
-	 export CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" ; \
-	 export LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" ; \
-	 export CFLAGS="-O2 -m32" ; \
-	 export CXXFLAGS="-O2 -m32" ; \
-	 $(call find-package-srcdir, ${GCC_VERSION})/configure \
-	   $(GCC_CONFIG_ARGS) --enable-threads --disable-tls --enable-libgomp) && \
-	$(STAMP) $@
+stmp-config-target-gcc: config.status stmp-patch-libgomp-for-android stmp-install-host-ppl stmp-build-target-binutils stmp-build-target-bionic
+	$(call config-gcc,target,--enable-libgomp)
+
 build-target-gcc: stmp-build-target-gcc
 stmp-build-target-gcc: stmp-config-target-gcc
-	($(canadian_env) \
-	 $(MAKE) -C ${GCC_VERSION} \
-		CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
-		CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" \
-		LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" \
-		$(gcc_build_target)) \
-	&& $(STAMP) $@
+	$(call build-gcc,target)
 install-target-gcc-gcc: stmp-build-target-gcc
-	($(canadian_env) \
-	 $(MAKE) -C ${GCC_VERSION} $(gcc_install_target))
+	$(call install-gcc,target)
 install-target-gcc: install-target-gcc-gcc $(install-target-gcc-multilibs)
 
 # minimal gcc rules

@@ -501,7 +501,7 @@ endef
 
 
 patch-libgomp-for-android: config.status
-	 sed -i -e '/#include <limits.h>/i#include <sys/mman.h>' temp-src/$(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c ; \
+	 grep -q sys/mman.h temp-src/$(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c || sed -i -e '/#include <limits.h>/i#include <sys/mman.h>' temp-src/$(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c ; \
 
 stmp-patch-libgomp-for-android: patch-libgomp-for-android
 	$(STAMP) $@

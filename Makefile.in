@@ -204,10 +204,15 @@ ifeq ($(ENABLE_GRAPHITE),yes)
 build: install-host-cloog
 endif
 ifneq (, $(findstring android,$(cur_target)))
-build: build-target-binutils build-host-libbfd build-target-gcc \
+# generic target matching our real target (e.g. arm-eabi for arm-linux-androideabi)
+generic_target := $(subst linux-android,,$(cur_target))
+
+build: build-target-binutils build-generic-target-binutils build-host-libbfd \
+	build-target-gcc build-generic-target-gcc \
 	build-target-gdb remove-bionic
 
-install: install-target-binutils install-host-libbfd install-target-gcc \
+install: install-target-binutils install-generic-target-binutils \
+	install-host-libbfd install-target-gcc install-generic-target-gcc \
 	install-target-gdb
 else
 build: build-target-binutils build-host-libbfd build-bootstrap-gcc \
@@ -277,7 +282,7 @@ endif
 config-target-binutils: stmp-config-target-binutils
 # We do not want to enable shared libraries in binutils
 BINUTILS_CONFIG_ARGS=--prefix=$(prefix) \
-	--target=${cur_target} --host=${cur_host} --build=${cur_build} \
+	--host=${cur_host} --build=${cur_build} \
 	$(baseargs) --disable-shared --disable-werror
 ifeq ($(ENABLE_GRAPHITE),yes)
 BINUTILS_CONFIG_ARGS+= --with-cloog=${CLOOG_DIR} --with-gmp=${GMP_DIR} \
@@ -293,6 +298,7 @@ stmp-config-target-binutils: config.status $(canadian_stmp)
 	($(canadian_env) \
 	 cd ${BINUTILS_VERSION} ; \
 	 $(call find-package-srcdir, ${BINUTILS_VERSION})/configure \
+	  --target=$(cur_target) \
 	  $(BINUTILS_CONFIG_ARGS)) && \
 	$(STAMP) $@
 build-target-binutils: stmp-build-target-binutils
@@ -302,6 +308,23 @@ stmp-build-target-binutils: stmp-config-target-binutils
 install-target-binutils: stmp-build-target-binutils
 	($(canadian_env) \
 	 $(MAKE) -C ${BINUTILS_VERSION} install)
+
+stmp-config-generic-target-binutils: config.status $(canadian_stmp)
+	([ -d generic-${BINUTILS_VERSION} ] || \
+	  mkdir generic-${BINUTILS_VERSION}) && \
+	($(canadian_env) \
+	 cd generic-${BINUTILS_VERSION} ; \
+	 $(call find-package-srcdir, ${BINUTILS_VERSION})/configure \
+	  --target=$(generic_target) \
+	  $(BINUTILS_CONFIG_ARGS)) && \
+	$(STAMP) $@
+build-generic-target-binutils: stmp-build-generic-target-binutils
+stmp-build-generic-target-binutils: stmp-config-generic-target-binutils
+	($(canadian_env) \
+	 $(MAKE) -C generic-${BINUTILS_VERSION}) && $(STAMP) $@
+install-generic-target-binutils: stmp-build-generic-target-binutils
+	($(canadian_env) \
+	 $(MAKE) -C generic-${BINUTILS_VERSION} install)
 
 # target gold rules.  We need these only if BINUTILS_VERSION != GOLD_VERSION
 ifneq ($(BINUTILS_VERSION), $(GOLD_VERSION))
@@ -374,7 +397,7 @@ install-host-libbfd: stmp-build-host-libbfd install-target-binutils
 config-target-gcc: stmp-config-target-gcc
 
 GCC_CONFIG_ARGS=--prefix=$(prefix) \
-	  --target=${cur_target} --host=${cur_host} --build=${cur_build} \
+	  --host=${cur_host} --build=${cur_build} \
 	  --with-gnu-as --with-gnu-ld --enable-languages=c,c++
 
 # For gcc versions 4.3.0 and later, gmp and mpfr are required.
@@ -458,11 +481,14 @@ stmp-build-target-bionic:
 remove-bionic:
 endif
 
-# Usage: $(call config-gcc,TYPE,CONFIGURE_ARGS)
+# Usage: $(call config-gcc,TYPE,CONFIGURE_ARGS[,TARGET])
 # Where
 # 	TYPE aka $(1) is bootstrap or target
 #	CONFIGURE_ARGS aka $(2) is extra arguments passed to configure
+#	TARGET aka $(3) is the target platform, e.g. arm-eabi- (default: $(cur_target))
 define config-gcc =
+	[ -n "$(3)" ] && TARGET="$(3)" || TARGET="$(cur_target)" ; \
+	echo "Building gcc for $$TARGET with cur_target $(cur_target), generic_target $(generic_target)"; \
 	([ -d gcc-$(1)-$(GCC_VERSION) ] || \
 	  mkdir gcc-$(1)-$(GCC_VERSION)) && \
 	($(canadian_env) \
@@ -474,7 +500,7 @@ define config-gcc =
 	 export CFLAGS="-O2 -m32" ; \
 	 export CXXFLAGS="-O2 -m32" ; \
 	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
-	  $(GCC_CONFIG_ARGS) --enable-threads --enable-tls $(2)) && \
+	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls $(2)) && \
 	$(STAMP) $@
 endef
 
@@ -506,7 +532,7 @@ patch-libgomp-for-android: config.status
 stmp-patch-libgomp-for-android: patch-libgomp-for-android
 	$(STAMP) $@
 
-# We have to add -mandroid in target CFLAGS and CXXFLAGS
+# Bootstrap compiler: Just the basics so we don't need a libc yet
 stmp-config-bootstrap-gcc: config.status stmp-patch-libgomp-for-android stmp-install-host-ppl stmp-build-target-binutils
 	$(call config-gcc,bootstrap,--disable-libgomp)
 build-bootstrap-gcc: stmp-build-bootstrap-gcc
@@ -516,15 +542,33 @@ install-bootstrap-gcc-gcc: stmp-build-bootstrap-gcc
 	$(call install-gcc,bootstrap)
 install-bootstrap-gcc: install-bootstrap-gcc-gcc
 
+
+# Target compiler: The real compiler, may have libc dependencies
 stmp-config-target-gcc: config.status stmp-patch-libgomp-for-android stmp-install-host-ppl stmp-build-target-binutils stmp-build-target-bionic
 	$(call config-gcc,target,--enable-libgomp)
-
 build-target-gcc: stmp-build-target-gcc
 stmp-build-target-gcc: stmp-config-target-gcc
 	$(call build-gcc,target)
 install-target-gcc-gcc: stmp-build-target-gcc
 	$(call install-gcc,target)
 install-target-gcc: install-target-gcc-gcc $(install-target-gcc-multilibs)
+
+
+ifneq ($(generic_target),)
+# Generic target compiler: OS independent bare compiler (e.g. arm-eabi-gcc)
+# Since this compiler cannot make any assumptions about the OS, it is by
+# nature not dependent on any libc bits - so we don't need to go through
+# the steps of building a bootstrap compiler first.
+stmp-config-generic-target-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
+	$(call config-gcc,generic-target,--disable-libgomp,$(generic_target))
+build-generic-target-gcc: stmp-build-generic-target-gcc
+stmp-build-generic-target-gcc: stmp-config-generic-target-gcc
+	$(call build-gcc,generic-target)
+install-generic-target-gcc-gcc: stmp-build-generic-target-gcc
+	$(call install-gcc,generic-target)
+install-generic-target-gcc: install-generic-target-gcc-gcc
+endif
+
 
 # minimal gcc rules
 # minimal gcc only builds the C and C++ compilers and libgcc

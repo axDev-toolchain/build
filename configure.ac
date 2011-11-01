@@ -155,19 +155,26 @@ done
 # expanded by make, quote '$'.
 baseargs=`echo "x$baseargs" | sed -e 's/^x *//' -e 's,\\$,$$,g'`
 
-# Add in --program-transform-name, after --program-prefix and
-# --program-suffix have been applied to it.  Autoconf has already
-# doubled dollar signs and backslashes in program_transform_name; we want
-# the backslashes un-doubled, and then the entire thing wrapped in single
-# quotes, because this will be expanded first by make and then by the shell.
-# Also, because we want to override the logic in subdir configure scripts to
-# choose program_transform_name, replace any s,x,x, with s,y,y,.
-sed -e "s,\\\\\\\\,\\\\,g; s,','\\\\'',g; s/s,x,x,/s,y,y,/" <<EOF_SED > conftestsed.out
-${program_transform_name}
-EOF_SED
-gcc_transform_name=`cat conftestsed.out`
-rm -f conftestsed.out
-baseargs="$baseargs --program-transform-name='${gcc_transform_name}'"
+# We don't need to do the bits below because the binutils and gcc build
+# processes do a great job at doing the right thing - and using
+# --program-transform-name instead of letting the tools do their job
+# effectively prevents us from building for 2 different targets
+# (e.g. arm-linux-androideabi and arm-eabi) in the same run.
+# Keeping it there and commented out for now, just in case there is
+# some strange use case (newlib?) that actually needs it
+dnl # Add in --program-transform-name, after --program-prefix and
+dnl # --program-suffix have been applied to it.  Autoconf has already
+dnl # doubled dollar signs and backslashes in program_transform_name; we want
+dnl # the backslashes un-doubled, and then the entire thing wrapped in single
+dnl # quotes, because this will be expanded first by make and then by the shell.
+dnl # Also, because we want to override the logic in subdir configure scripts to
+dnl # choose program_transform_name, replace any s,x,x, with s,y,y,.
+dnl sed -e "s,\\\\\\\\,\\\\,g; s,','\\\\'',g; s/s,x,x,/s,y,y,/" <<EOF_SED > conftestsed.out
+dnl ${program_transform_name}
+dnl EOF_SED
+dnl gcc_transform_name=`cat conftestsed.out`
+dnl rm -f conftestsed.out
+dnl baseargs="$baseargs --program-transform-name='${gcc_transform_name}'"
 if test "$silent" = yes; then
   baseargs="$baseargs --silent"
 fi

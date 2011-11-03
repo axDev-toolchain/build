@@ -534,6 +534,7 @@ stmp-patch-libgomp-for-android: patch-libgomp-for-android
 	$(STAMP) $@
 
 # Bootstrap compiler: Just the basics so we don't need a libc yet
+.PHONY: build-bootstrap-gcc install-bootstrap-gcc install-bootstrap-gcc-gcc
 stmp-config-bootstrap-gcc: config.status stmp-patch-libgomp-for-android stmp-install-host-ppl stmp-build-target-binutils
 	$(call config-gcc,bootstrap,--disable-libgomp)
 build-bootstrap-gcc: stmp-build-bootstrap-gcc
@@ -545,6 +546,7 @@ install-bootstrap-gcc: install-bootstrap-gcc-gcc
 
 
 # Target compiler: The real compiler, may have libc dependencies
+.PHONY: build-target-gcc install-target-gcc-gcc install-target-gcc
 stmp-config-target-gcc: config.status stmp-patch-libgomp-for-android stmp-install-host-ppl stmp-build-target-binutils stmp-build-target-bionic
 	$(call config-gcc,target,--enable-libgomp)
 build-target-gcc: stmp-build-target-gcc
@@ -560,6 +562,7 @@ ifneq ($(generic_target),)
 # Since this compiler cannot make any assumptions about the OS, it is by
 # nature not dependent on any libc bits - so we don't need to go through
 # the steps of building a bootstrap compiler first.
+.PHONY: bui√ld-generic-target-gcc install-generic-target-gcc install-generic-target-gcc-gcc
 stmp-config-generic-target-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
 	$(call config-gcc,generic-target,--disable-libgomp,$(generic_target))
 build-generic-target-gcc: stmp-build-generic-target-gcc

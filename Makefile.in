@@ -455,6 +455,17 @@ GCC_CONFIG_ARGS += $(baseargs)
 
 ifeq ($(BUILD_ANDROID_GCC),yes)
 stmp-build-target-bionic: install-target-binutils install-bootstrap-gcc
+	# Workaround for seemingly broken version of make on android-build
+	# not running install-bootstrap-gcc even though we depend on it
+	if [ ! -e $(prefix)/bin/$(cur_target)-gcc ]; then \
+		rm -f stmp*gcc ; \
+		$(MAKE) stmp-build-bootstrap-gcc ; \
+		$(MAKE) install-bootstrap-gcc ; \
+		if [ ! -e $(prefix)/bin/$(cur_target)-gcc ]; then \
+			echo "install-bootstrap-gcc didn't do its job"; \
+			exit 1 ; \
+		fi ; \
+	fi
 	ONE_SHOT_MAKEFILE=external/elfutils/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=external/elfcopy/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=build/libs/host/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
@@ -521,6 +532,7 @@ endef
 # Where
 # 	TYPE aka $(1) is bootstrap or target
 define install-gcc =
+	echo install-gcc running for gcc-$(1)-$(GCC_VERSION) $(gcc_install_target)
 	($(canadian_env) \
 	 $(MAKE) -C gcc-$(1)-$(GCC_VERSION) $(gcc_install_target))
 endef
@@ -528,32 +540,108 @@ endef
 
 patch-libgomp-for-android: config.status
 	cd temp-src && \
-	grep -q sys/mman.h $(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c || sed -i -e '/#include <limits.h>/i#include <sys/mman.h>' $(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c ; \
+	grep -q sys/mman.h $(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c || sed -i -e '/#include <limits.h>/i#include <sys/mman.h>' $(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c
 
 stmp-patch-libgomp-for-android: patch-libgomp-for-android
 	$(STAMP) $@
 
 # Bootstrap compiler: Just the basics so we don't need a libc yet
-.PHONY: build-bootstrap-gcc install-bootstrap-gcc install-bootstrap-gcc-gcc
-stmp-config-bootstrap-gcc: config.status stmp-patch-libgomp-for-android stmp-install-host-ppl stmp-build-target-binutils
-	$(call config-gcc,bootstrap,--disable-libgomp)
+.PHONY: build-bootstrap-gcc install-bootstrap-gcc
+stmp-config-bootstrap-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
+	# We should just call
+	# $(call config-gcc,bootstrap,--disable-libgomp)
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	TARGET="$(cur_target)" ; \
+	([ -d gcc-bootstrap-$(GCC_VERSION) ] || \
+	  mkdir gcc-bootstrap-$(GCC_VERSION)) && \
+	($(canadian_env) \
+	 cd gcc-bootstrap-${GCC_VERSION} ; \
+	 $(TARGET_BINUTILS_EXPORTS) ; \
+	 export CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" ; \
+	 export CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" ; \
+	 export LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" ; \
+	 export CFLAGS="-O2 -m32" ; \
+	 export CXXFLAGS="-O2 -m32" ; \
+	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
+	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --disable-libgomp) && \
+	$(STAMP) $@
 build-bootstrap-gcc: stmp-build-bootstrap-gcc
 stmp-build-bootstrap-gcc: stmp-config-bootstrap-gcc
-	$(call build-gcc,bootstrap)
-install-bootstrap-gcc-gcc: stmp-build-bootstrap-gcc
-	$(call install-gcc,bootstrap)
-install-bootstrap-gcc: install-bootstrap-gcc-gcc
-
+	# We should just call
+	# $(call build-gcc,bootstrap)
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	# Workaround for build-gcc seemingly not working
+	# inside android-build: Broken version of make?
+	($(canadian_env) \
+	 $(MAKE) -C gcc-bootstrap-$(GCC_VERSION) \
+	  CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
+	  CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" \
+	  LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" \
+	  $(gcc_build_target)) && \
+	$(STAMP) $@
+install-bootstrap-gcc: stmp-build-bootstrap-gcc
+	# We should just call
+	# $(call install-gcc,bootstrap)
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	# Workaround for build-gcc seemingly not working
+	# inside android-build: Broken version of make?
+	($(canadian_env) \
+	 $(MAKE) -C gcc-bootstrap-$(GCC_VERSION) $(gcc_install_target))
 
 # Target compiler: The real compiler, may have libc dependencies
 .PHONY: build-target-gcc install-target-gcc-gcc install-target-gcc
 stmp-config-target-gcc: config.status stmp-patch-libgomp-for-android stmp-install-host-ppl stmp-build-target-binutils stmp-build-target-bionic
-	$(call config-gcc,target,--enable-libgomp)
+	# We should just call
+	# $(call config-gcc,target,--enable-libgomp)
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	TARGET="$(cur_target)" ; \
+	([ -d gcc-target-$(GCC_VERSION) ] || \
+	  mkdir gcc-target-$(GCC_VERSION)) && \
+	($(canadian_env) \
+	 cd gcc-target-${GCC_VERSION} ; \
+	 $(TARGET_BINUTILS_EXPORTS) ; \
+	 export CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" ; \
+	 export CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" ; \
+	 export LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" ; \
+	 export CFLAGS="-O2 -m32" ; \
+	 export CXXFLAGS="-O2 -m32" ; \
+	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
+	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --enable-libgomp) && \
+	$(STAMP) $@
 build-target-gcc: stmp-build-target-gcc
 stmp-build-target-gcc: stmp-config-target-gcc
-	$(call build-gcc,target)
+	# We should just call
+	# $(call build-gcc,target)
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	# Workaround for build-gcc seemingly not working
+	# inside android-build: Broken version of make?
+	($(canadian_env) \
+	 $(MAKE) -C gcc-target-$(GCC_VERSION) \
+	  CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
+	  CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" \
+	  LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" \
+	  $(gcc_build_target)) && \
+	$(STAMP) $@
 install-target-gcc-gcc: stmp-build-target-gcc
-	$(call install-gcc,target)
+	# We should just call
+	# $(call install-gcc,target)
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	# Workaround for build-gcc seemingly not working
+	# inside android-build: Broken version of make?
+	($(canadian_env) \
+	 $(MAKE) -C gcc-target-$(GCC_VERSION) $(gcc_install_target))
 install-target-gcc: install-target-gcc-gcc $(install-target-gcc-multilibs)
 
 
@@ -564,12 +652,51 @@ ifneq ($(generic_target),)
 # the steps of building a bootstrap compiler first.
 .PHONY: build-generic-target-gcc install-generic-target-gcc install-generic-target-gcc-gcc
 stmp-config-generic-target-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
-	$(call config-gcc,generic-target,--disable-libgomp,$(generic_target))
+	# We should just call
+	# $(call config-gcc,generic-target,--disable-libgomp,$(generic_target))
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	TARGET="$(generic_target)" ; \
+	([ -d gcc-generic-target-$(GCC_VERSION) ] || \
+	  mkdir gcc-generic-target-$(GCC_VERSION)) && \
+	($(canadian_env) \
+	 cd gcc-generic-target-${GCC_VERSION} ; \
+	 $(TARGET_BINUTILS_EXPORTS) ; \
+	 export CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" ; \
+	 export CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" ; \
+	 export LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" ; \
+	 export CFLAGS="-O2 -m32" ; \
+	 export CXXFLAGS="-O2 -m32" ; \
+	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
+	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --disable-libgomp) && \
+	$(STAMP) $@
 build-generic-target-gcc: stmp-build-generic-target-gcc
 stmp-build-generic-target-gcc: stmp-config-generic-target-gcc
-	$(call build-gcc,generic-target)
+	# We should just call
+	# $(call build-gcc,generic-target)
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	# Workaround for build-gcc seemingly not working
+	# inside android-build: Broken version of make?
+	($(canadian_env) \
+	 $(MAKE) -C gcc-generic-target-$(GCC_VERSION) \
+	  CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
+	  CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" \
+	  LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" \
+	  $(gcc_build_target)) && \
+	$(STAMP) $@
 install-generic-target-gcc-gcc: stmp-build-generic-target-gcc
-	$(call install-gcc,generic-target)
+	# We should just call
+	# $(call install-gcc,generic-target)
+	# Unfortunately, the version on make on android-build
+	# is really broken (the call statement works fine
+	# w/ make 3.82), so we have to do it manually:
+	# Workaround for build-gcc seemingly not working
+	# inside android-build: Broken version of make?
+	($(canadian_env) \
+	 $(MAKE) -C gcc-generic-target-$(GCC_VERSION) $(gcc_install_target))
 install-generic-target-gcc: install-generic-target-gcc-gcc
 endif
 

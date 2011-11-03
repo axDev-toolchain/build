@@ -292,7 +292,7 @@ BINUTILS_CONFIG_ARGS+= \
 	'--with-host-libstdcxx=-static-libgcc \
 	 -Wl,-Bstatic,-lstdc++,-Bdynamic -lm'
 endif
-stmp-config-target-binutils: config.status $(canadian_stmp)
+stmp-config-target-binutils: config.status stmp-install-host-ppl $(canadian_stmp)
 	([ -d ${BINUTILS_VERSION} ] || \
 	  mkdir ${BINUTILS_VERSION}) && \
 	($(canadian_env) \
@@ -309,7 +309,7 @@ install-target-binutils: stmp-build-target-binutils
 	($(canadian_env) \
 	 $(MAKE) -C ${BINUTILS_VERSION} install)
 
-stmp-config-generic-target-binutils: config.status $(canadian_stmp)
+stmp-config-generic-target-binutils: config.status stmp-install-host-ppl $(canadian_stmp)
 	([ -d generic-${BINUTILS_VERSION} ] || \
 	  mkdir generic-${BINUTILS_VERSION}) && \
 	($(canadian_env) \
@@ -562,7 +562,7 @@ ifneq ($(generic_target),)
 # Since this compiler cannot make any assumptions about the OS, it is by
 # nature not dependent on any libc bits - so we don't need to go through
 # the steps of building a bootstrap compiler first.
-.PHONY: bui√ld-generic-target-gcc install-generic-target-gcc install-generic-target-gcc-gcc
+.PHONY: build-generic-target-gcc install-generic-target-gcc install-generic-target-gcc-gcc
 stmp-config-generic-target-gcc: config.status stmp-install-host-ppl stmp-build-target-binutils
 	$(call config-gcc,generic-target,--disable-libgomp,$(generic_target))
 build-generic-target-gcc: stmp-build-generic-target-gcc

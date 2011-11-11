@@ -2677,7 +2677,7 @@ if test "${with_gdb_version+set}" = set; then :
      GDB_VERSION="$withval"
    fi
 else
-  GDB_VERSION="linaro-7.3-2011.09"
+  GDB_VERSION="linaro-7.3-2011.10"
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GDB_VERSION" >&5

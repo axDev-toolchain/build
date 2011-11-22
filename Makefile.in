@@ -438,7 +438,7 @@ CFLAGS_FOR_TARGET += -DTARGET_POSIX_IO -fno-short-enums
 # -include .../sys/limits.h is a workaround for Bionic's ptherad.h requiring
 # LONG_BIT, which usually comes in through limits.h -- but gcc has its own
 # version of that which fails to include sys/limits.h
-CFLAGS_FOR_TARGET += -isystem $(abs_srcdir)/../android/bionic/libc/include -isystem $(abs_srcdir)/../android/bionic/libc/kernel/common -isystem $(abs_srcdir)/../android/bionic/libc/kernel/arch-$(target_cpu) -isystem $(abs_srcdir)/../android/bionic/libc/arch-$(target_cpu)/include -include $(abs_srcdir)/../android/bionic/libc/include/sys/limits.h
+CFLAGS_FOR_TARGET += -isystem $(abs_srcdir)/../android/bionic/libc/include -isystem $(abs_srcdir)/../android/bionic/libc/kernel/common -isystem $(abs_srcdir)/../android/bionic/libc/kernel/arch-$(target_cpu) -isystem $(abs_srcdir)/../android/bionic/libc/arch-$(target_cpu)/include -isystem $(abs_srcdir)/../android/bionic/libm/include -isystem $(abs_srcdir)/../android/bionic/libm/include/arm -isystem $(abs_srcdir)/../android/bionic/libm/arm -include $(abs_srcdir)/../android/bionic/libc/include/sys/limits.h
 # ARM specific options.
 ifeq ($(target_cpu),arm)
 GCC_CONFIG_ARGS += --with-float=soft --with-fpu=vfp --with-arch=armv5te \

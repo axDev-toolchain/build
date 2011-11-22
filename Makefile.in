@@ -207,6 +207,7 @@ ifneq (, $(findstring android,$(cur_target)))
 # generic target matching our real target (e.g. arm-eabi for arm-linux-androideabi)
 generic_target := $(subst linux-android,,$(cur_target))
 
+ifeq ($(GCC_MIN_VERSION_4_5_0),yes)
 build: build-target-binutils build-generic-target-binutils build-host-libbfd \
 	build-target-gcc build-generic-target-gcc \
 	build-target-gdb remove-bionic
@@ -214,6 +215,16 @@ build: build-target-binutils build-generic-target-binutils build-host-libbfd \
 install: install-target-binutils install-generic-target-binutils \
 	install-host-libbfd install-target-gcc install-generic-target-gcc \
 	install-target-gdb
+else
+# gcc < 4.5 is too broken to build a proper target compiler
+# But it's sufficient to build the bootstrap target compiler...
+build: build-target-binutils build-generic-target-binutils build-host-libbfd \
+	build-bootstrap-gcc build-generic-target-gcc build-target-gdb
+
+install: install-target-binutils install-generic-target-binutils \
+	install-host-libbfd install-bootstrap-gcc install-generic-target-gcc \
+	install-target-gdb
+endif
 else
 build: build-target-binutils build-host-libbfd build-bootstrap-gcc \
 	build-target-gdb

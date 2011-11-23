@@ -295,7 +295,7 @@ config-target-binutils: stmp-config-target-binutils
 BINUTILS_CONFIG_ARGS=--prefix=$(prefix) \
 	--host=${cur_host} --build=${cur_build} \
 	$(baseargs) --disable-shared --disable-werror
-ifeq ($(BINUTILS_VERSION), 2.20.1)
+ifeq ($(BINUTILS_VERSION),binutils-2.20.1)
 BINUTILS_CONFIG_ARGS+= --enable-gold=both/gold
 else
 BINUTILS_CONFIG_ARGS+= --enable-gold=default

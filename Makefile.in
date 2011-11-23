@@ -638,8 +638,8 @@ stmp-build-target-gcc: stmp-config-target-gcc
 	# inside android-build: Broken version of make?
 	($(canadian_env) \
 	 $(MAKE) -C gcc-target-$(GCC_VERSION) \
-	  CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET)" \
-	  CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET)" \
+	  CFLAGS_FOR_TARGET="$(CFLAGS_FOR_TARGET) -fexceptions" \
+	  CXXFLAGS_FOR_TARGET="$(CXXFLAGS_FOR_TARGET) -frtti" \
 	  LDFLAGS_FOR_TARGET="$(LDFLAGS_FOR_TARGET)" \
 	  $(gcc_build_target)) && \
 	$(STAMP) $@

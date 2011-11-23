@@ -265,11 +265,11 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   \
   ${BUILD_WITH_GCC} \
   ${BUILD_WITH_GDB} \
-  --with-binutils-version=2.22 \
+  --with-binutils-version=${BINUTILS_VERSION-2.22} \
   \
-  --with-gmp-version=5.0.2 \
-  --with-mpfr-version=3.1.0 \
-  --with-mpc-version=0.9 \
+  --with-gmp-version=${GMP_VERSION-5.0.2} \
+  --with-mpfr-version=${MPFR_VERSION-3.1.0} \
+  --with-mpc-version=${MPC_VERSION-0.9} \
   \
   ${LINARO_BUILD_EXTRA_CONFIGURE_FLAGS}
 

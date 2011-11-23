@@ -625,7 +625,7 @@ stmp-config-target-gcc: config.status stmp-patch-libgomp-for-android stmp-instal
 	 export CFLAGS="-O2 -m32" ; \
 	 export CXXFLAGS="-O2 -m32" ; \
 	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
-	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --enable-libgomp --enable-libstdc__-v3) && \
+	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --enable-libgomp --disable-libstdc__-v3) && \
 	$(STAMP) $@
 build-target-gcc: stmp-build-target-gcc
 stmp-build-target-gcc: stmp-config-target-gcc

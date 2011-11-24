@@ -303,7 +303,11 @@ BINUTILS_CONFIG_ARGS=--prefix=$(prefix) \
 ifeq ($(BINUTILS_VERSION),binutils-2.20.1)
 BINUTILS_CONFIG_ARGS+= --enable-gold=both/gold
 else
+ifeq ($(BINUTILS_VERSION),binutils-20100303)
+BINUTILS_CONFIG_ARGS+= --enable-gold=both/gold
+else
 BINUTILS_CONFIG_ARGS+= --enable-gold=default
+endif
 endif
 ifeq ($(ENABLE_GRAPHITE),yes)
 BINUTILS_CONFIG_ARGS+= --with-cloog=${CLOOG_DIR} --with-gmp=${GMP_DIR} \

@@ -110,9 +110,13 @@ ifeq ($(BINUTILS_VERSION),binutils-2.20.1)
 # gold 2.20.1 is too broken to link gcc 4.6's libgomp
 FIND_TARGET_LD=ld
 else
+ifeq ($(BINUTILS_VERSION),binutils-20100303)
+FIND_TARGET_LD=ld
+else
 # Figure out where to find the ld binary.
 FIND_TARGET_LD=\
 	`[ -d $(TARGET_BINUTILS_BUILDDIR)/gold ] && echo "gold" || echo "ld"`
+endif
 endif
 
 # We export these insteading when configuring target gcc and newlib

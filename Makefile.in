@@ -867,7 +867,7 @@ PPL_CONFIG_ARGS=$(baseargs) --prefix=$(TEMP_INSTALLDIR) --disable-shared \
 		--target=${target_alias} \
 		--host=${host} --build=${build} \
 		--disable-nls --with-libgmp-prefix=$(GMP_DIR) \
-		--disable-watchdog \
+		--disable-watchdog --without-java \
 		--disable-ppl_lcdd --disable-ppl_lpsol --disable-ppl_pips
 stmp-config-host-ppl: config.status stmp-install-host-gmp
 	([ -d ${PPL_VERSION} ] || \

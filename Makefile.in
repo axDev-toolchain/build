@@ -306,7 +306,7 @@ BINUTILS_CONFIG_ARGS=--prefix=$(prefix) \
 	$(baseargs) --disable-shared --disable-nls --enable-gold=default
 ifeq ($(ENABLE_GRAPHITE),yes)
 BINUTILS_CONFIG_ARGS+= --with-cloog=${CLOOG_DIR} --with-isl=${ISL_DIR} --with-isl=${ISL_DIR} --with-gmp=${GMP_DIR} \
-	--disable-ppl-version-check --disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND)
+	--disable-ppl-version-check --disable-cloog-version-check --disable-isl-version-check $(CLOOG_BACKEND) --enable-plugins --enable-threads
 # links to the static C++ runtime to avoid depending on the host version
 ifneq ($(host_os),darwin)
 BINUTILS_CONFIG_ARGS+= \

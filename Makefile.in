@@ -674,7 +674,7 @@ install-target-gcc-gcc: stmp-build-target-gcc
 	# inside android-build: Broken version of make?
 	($(canadian_env) \
 	 $(MAKE) -C gcc-target-$(GCC_VERSION) $(gcc_install_target))
-	ln -s ../../../../bin/$(cur_target)-ld $(prefix)/libexec/gcc/arm-linux-androideabi/*/real-ld
+	(cd $(prefix)/libexec/gcc/arm-linux-androideabi && cd `ls -1` && ln -s ../../../../bin/$(cur_target)-ld real-ld)
 install-target-gcc: install-target-gcc-gcc $(install-target-gcc-multilibs)
 
 

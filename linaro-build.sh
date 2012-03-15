@@ -273,4 +273,4 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   \
   ${LINARO_BUILD_EXTRA_CONFIGURE_FLAGS}
 
-make && make install
+make HOSTGCC="$HOSTGCC" && make install

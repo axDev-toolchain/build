@@ -327,7 +327,7 @@ stmp-config-target-binutils: config.status stmp-install-host-ppl $(canadian_stmp
 	  mkdir ${BINUTILS_VERSION}) && \
 	($(canadian_env) \
 	 cd ${BINUTILS_VERSION} ; \
-	 if which g++-4.5; then export CC=gcc-4.5; export CXX=g++-4.5; fi ; \
+	 if which g++-$(HOSTGCC); then export CC=gcc-$(HOSTGCC); export CXX=g++-$(HOSTGCC); fi ; \
 	 $(call find-package-srcdir, ${BINUTILS_VERSION})/configure \
 	  --target=$(cur_target) \
 	  $(BINUTILS_CONFIG_ARGS)) && \
@@ -335,11 +335,11 @@ stmp-config-target-binutils: config.status stmp-install-host-ppl $(canadian_stmp
 build-target-binutils: stmp-build-target-binutils
 stmp-build-target-binutils: stmp-config-target-binutils
 	($(canadian_env) \
-	 if which g++-4.5; then export CC=gcc-4.5; export CXX=g++-4.5; fi ; \
+	 if which g++-$(HOSTGCC); then export CC=gcc-$(HOSTGCC); export CXX=g++-$(HOSTGCC); fi ; \
 	 $(MAKE) -C ${BINUTILS_VERSION}) && $(STAMP) $@
 install-target-binutils: stmp-build-target-binutils
 	($(canadian_env) \
-	 if which g++-4.5; then export CC=gcc-4.5; export CXX=g++-4.5; fi ; \
+	 if which g++-$(HOSTGCC); then export CC=gcc-$(HOSTGCC); export CXX=g++-$(HOSTGCC); fi ; \
 	 $(MAKE) -C ${BINUTILS_VERSION} install)
 
 stmp-config-generic-target-binutils: config.status stmp-install-host-ppl $(canadian_stmp)
@@ -347,7 +347,7 @@ stmp-config-generic-target-binutils: config.status stmp-install-host-ppl $(canad
 	  mkdir generic-${BINUTILS_VERSION}) && \
 	($(canadian_env) \
 	 cd generic-${BINUTILS_VERSION} ; \
-	 if which g++-4.5; then export CC=gcc-4.5; export CXX=g++-4.5; fi ; \
+	 if which g++-$(HOSTGCC); then export CC=gcc-$(HOSTGCC); export CXX=g++-$(HOSTGCC); fi ; \
 	 $(call find-package-srcdir, ${BINUTILS_VERSION})/configure \
 	  --target=$(generic_target) \
 	  $(BINUTILS_CONFIG_ARGS)) && \

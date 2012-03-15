@@ -2677,7 +2677,7 @@ if test "${with_gdb_version+set}" = set; then :
      GDB_VERSION="$withval"
    fi
 else
-  GDB_VERSION="linaro-7.3-2011.10"
+  GDB_VERSION="linaro-7.4-2012.02"
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $GDB_VERSION" >&5
@@ -3395,7 +3395,7 @@ esac
 
 cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
-config_files="$ac_config_files"
+config_files="`echo $ac_config_files`"
 
 _ACEOF
 

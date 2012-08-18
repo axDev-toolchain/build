@@ -500,7 +500,9 @@ stmp-build-target-bionic: install-target-binutils install-bootstrap-gcc
 			exit 1 ; \
 		fi ; \
 	fi
-	ONE_SHOT_MAKEFILE=external/elfutils/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
+	# Building elfutils is necessary for ICS Bionic, but no longer for JellyBean
+	# Uncomment the line below if you're trying to build against a pre-JB Android tree.
+	#ONE_SHOT_MAKEFILE=external/elfutils/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=build/libs/host/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=build/tools/acp/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=bionic/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard

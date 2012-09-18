@@ -397,7 +397,7 @@ endif
 .PHONY: config-host-libbfd build-host-libbfd install-host-libbfd
 config-host-libbfd: stmp-config-host-libbfd
 LIBBFD_CONFIG_ARGS=--prefix=$(prefix) \
-	--enable-targets=all --host=${host} --build=${build} \
+	--host=${host} --build=${build} \
 	$(baseargs) --disable-shared \
 	--enable-install-libbfd --with-included-gettext \
 	--disable-werror

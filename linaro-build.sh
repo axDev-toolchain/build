@@ -257,8 +257,10 @@ else
   BUILD_HOST=i686-unknown-linux-gnu
 fi
 
+[ -z "$TARGET" ] && TARGET=arm-linux-androideabi
+
 ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
-  --prefix=${ARG_PREFIX_DIR} --target=arm-linux-androideabi \
+  --prefix=${ARG_PREFIX_DIR} --target=${TARGET} \
   --disable-docs --disable-nls \
   --host=${BUILD_HOST} --build=${BUILD_HOST} \
   ${BUILD_SYSROOT} \

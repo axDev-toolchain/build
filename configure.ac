@@ -31,6 +31,10 @@ case $target in
     BUILD_ANDROID_GCC=yes
     GDB_TARGET=arm-elf-linux
     ;;
+  aarch64-linux-android | aarch64-unknown-linux-android | aarch64-linux-gnu | aarch64-unknown-linux-gnu | aarch64-linux | aarch64-unknown-linux | aarch64-none | aarch64-unknown-none)
+    BUILD_ANDROID_GCC=yes
+    GDB_TARGET=aarch64-elf-linux-android
+    ;;
   arm-newlib-elf)
     BUILD_ANDROID_GCC=no
     ;;
@@ -38,7 +42,8 @@ case $target in
     BUILD_ANDROID_GCC=yes
     ;;
   *)
-    AC_MSG_ERROR(Unsupported target $target.);
+    AC_MSG_ERROR(Unsupported target $target.)
+    ;;
 esac
 AC_SUBST(BUILD_ANDROID_GCC)
 AC_SUBST(GDB_TARGET)

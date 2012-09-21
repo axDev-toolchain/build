@@ -479,6 +479,11 @@ CFLAGS_FOR_TARGET += -DTARGET_POSIX_IO -fno-short-enums
 # LONG_BIT, which usually comes in through limits.h -- but gcc has its own
 # version of that which fails to include sys/limits.h
 CFLAGS_FOR_TARGET += -isystem $(abs_srcdir)/../android/bionic/libc/include -isystem $(abs_srcdir)/../android/bionic/libc/kernel/common -isystem $(abs_srcdir)/../android/bionic/libc/kernel/arch-$(target_cpu) -isystem $(abs_srcdir)/../android/bionic/libc/arch-$(target_cpu)/include -isystem $(abs_srcdir)/../android/bionic/libm/include -isystem $(abs_srcdir)/../android/bionic/libm/include/arm -isystem $(abs_srcdir)/../android/bionic/libm/arm -include $(abs_srcdir)/../android/bionic/libc/include/sys/limits.h
+ifeq ($(target_cpu),aarch64)
+# AArch64 doesn't have bionic/libc/arch-aarch64 directories yet, for now, let's use
+# traditional ARM and see what breaks
+CFLAGS_FOR_TARGET += -isystem $(abs_srcdir)/../android/bionic/libc/arch-arm/include -isystem $(abs_srcdir)/../android/bionic/libc/kernel/arch-arm
+endif
 # ARM specific options.
 ifeq ($(target_cpu),arm)
 GCC_CONFIG_ARGS += --with-float=soft --with-fpu=vfp --with-arch=armv5te \

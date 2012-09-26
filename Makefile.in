@@ -16,6 +16,8 @@ target_vendor=@target_vendor@
 target_os=@target_os@
 target_cpu=@target_cpu@
 target=@target@
+# Turn arm-unknown-linux-androideabi into the actually used arm-linux-androideabi
+target_no_unknown=$(subst -unknown-,-,@target@)
 
 program_transform_name = @program_transform_name@
 
@@ -517,19 +519,19 @@ stmp-build-target-bionic: install-target-binutils install-bootstrap-gcc
 	ONE_SHOT_MAKEFILE=build/libs/host/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=build/tools/acp/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=bionic/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
-	cp $(abs_srcdir)/../android/out/target/product/pandaboard/obj/lib/* $(prefix)/@target@/lib/
-	ln -sf crtbegin_so.o $(prefix)/@target@/lib/crtbegin_dynamic.o
+	cp $(abs_srcdir)/../android/out/target/product/pandaboard/obj/lib/* $(prefix)/$(target_no_unknown)/lib/
+	ln -sf crtbegin_so.o $(prefix)/$(target_no_unknown)/lib/crtbegin_dynamic.o
 	touch dummy.c
 	$(prefix)/bin/${cur_target}-gcc -o dummy.o -c dummy.c
-	$(prefix)/bin/${cur_target}-ar cru $(prefix)/@target@/lib/libpthread.a dummy.o
-	$(prefix)/bin/${cur_target}-ranlib $(prefix)/@target@/lib/libpthread.a
+	$(prefix)/bin/${cur_target}-ar cru $(prefix)/$(target_no_unknown)/lib/libpthread.a dummy.o
+	$(prefix)/bin/${cur_target}-ranlib $(prefix)/$(target_no_unknown)/lib/libpthread.a
 	$(STAMP) $@
 
 # Remove bionic after the final compiler has been built - we should continue
 # to build bionic in the Android build rather than the toolchain build so it
 # is compiled with the optimal settings for the target board.
 remove-bionic:
-	rm -f $(prefix)/@target@/lib/libc* $(prefix)/@target@/lib/libm.so $(prefix)/@target@/lib/libdl.so $(prefix)/@target@/lib/crt*.o
+	rm -f $(prefix)/$(target_no_unknown)/lib/libc* $(prefix)/$(target_no_unknown)/lib/libm.so $(prefix)/$(target_no_unknown)/lib/libdl.so $(prefix)/$(target_no_unknown)/lib/crt*.o
 	rm -f stmp-build-target-bionic
 else
 stmp-build-target-bionic:
@@ -687,7 +689,7 @@ install-target-gcc-gcc: stmp-build-target-gcc
 	# inside android-build: Broken version of make?
 	($(canadian_env) \
 	 $(MAKE) -C gcc-target-$(GCC_VERSION) $(gcc_install_target))
-	(cd $(prefix)/libexec/gcc/@target@ && cd `ls -1` && ln -s ../../../../bin/$(cur_target)-ld real-ld)
+	(cd $(prefix)/libexec/gcc/$(target_no_unknown) && cd `ls -1` && ln -s ../../../../bin/$(cur_target)-ld real-ld)
 install-target-gcc: install-target-gcc-gcc $(install-target-gcc-multilibs)
 
 

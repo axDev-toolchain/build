@@ -538,9 +538,8 @@ endif
 	#ONE_SHOT_MAKEFILE=external/elfutils/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=build/libs/host/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	ONE_SHOT_MAKEFILE=build/tools/acp/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
-	ONE_SHOT_MAKEFILE=bionic/Android.mk make -C $(abs_srcdir)/../android all_modules TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
+	ONE_SHOT_MAKEFILE=bionic/Android.mk make -C $(abs_srcdir)/../android all_modules out/target/product/pandaboard/obj/lib/crtbegin_dynamic.o TARGET_TOOLS_PREFIX=$(prefix)/bin/${cur_target}- TARGET_PRODUCT=pandaboard
 	cp $(abs_srcdir)/../android/out/target/product/pandaboard/obj/lib/* $(prefix)/$(target_no_unknown)/lib/
-	ln -sf crtbegin_so.o $(prefix)/$(target_no_unknown)/lib/crtbegin_dynamic.o
 	touch dummy.c
 	$(prefix)/bin/${cur_target}-gcc -o dummy.o -c dummy.c
 	$(prefix)/bin/${cur_target}-ar cru $(prefix)/$(target_no_unknown)/lib/libpthread.a dummy.o

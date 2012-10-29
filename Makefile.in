@@ -433,7 +433,8 @@ config-target-gcc: stmp-config-target-gcc
 GCC_CONFIG_ARGS=--prefix=$(prefix) \
 	  --host=${cur_host} --build=${cur_build} \
 	  --with-gnu-as --with-gnu-ld --enable-languages=c,c++ \
-	  --with-pkgversion="Yuxon-4.6.3"
+	  --with-pkgversion="Yuxon-4.6.3" \
+	  --with-arch=armv7-a --with-tune=cortex-a8 \
 
 # For gcc versions 4.3.0 and later, gmp and mpfr are required.
 # Also build libgcc is a seperate sub-target in 4.3.0+.
@@ -476,7 +477,7 @@ CFLAGS_FOR_TARGET += -DTARGET_POSIX_IO -fno-short-enums
 CFLAGS_FOR_TARGET += -isystem $(abs_srcdir)/../android/bionic/libc/include -isystem $(abs_srcdir)/../android/bionic/libc/kernel/common -isystem $(abs_srcdir)/../android/bionic/libc/kernel/arch-$(target_cpu) -isystem $(abs_srcdir)/../android/bionic/libc/arch-$(target_cpu)/include -isystem $(abs_srcdir)/../android/bionic/libm/include -isystem $(abs_srcdir)/../android/bionic/libm/include/arm -isystem $(abs_srcdir)/../android/bionic/libm/arm -include $(abs_srcdir)/../android/bionic/libc/include/sys/limits.h
 # ARM specific options.
 ifeq ($(target_cpu),arm)
-GCC_CONFIG_ARGS += --with-float=soft --with-fpu=vfp --with-arch=armv5te \
+GCC_CONFIG_ARGS += --with-float=soft --with-fpu=vfp --with-arch=armv7-a --with-tune=cortex-a8 \
 	--enable-target-optspace
 ifneq ($(target_os),linux-androideabi)
 GCC_CONFIG_ARGS += --with-abi=aapcs

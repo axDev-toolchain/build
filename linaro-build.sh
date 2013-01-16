@@ -271,7 +271,7 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   \
   --with-gmp-version=${GMP_VERSION-5.0.5} \
   --with-mpfr-version=${MPFR_VERSION-3.1.1} \
-  --with-mpc-version=${MPC_VERSION-1.0} \
+  --with-mpc-version=${MPC_VERSION-current} \
   \
   ${LINARO_BUILD_EXTRA_CONFIGURE_FLAGS}
 

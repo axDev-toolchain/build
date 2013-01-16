@@ -483,7 +483,7 @@ AC_ARG_WITH([gdb-version],
   [if test x"$withval" != x ; then
      GDB_VERSION="$withval"
    fi],
-[GDB_VERSION="linaro-7.5-2012.12-1"])
+[GDB_VERSION="current"])
 AC_MSG_RESULT($GDB_VERSION)
 AC_SUBST(GDB_VERSION)
 ANDROID_CHECK_PACKAGE(gdb-${GDB_VERSION})

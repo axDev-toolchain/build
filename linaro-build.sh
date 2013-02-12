@@ -269,7 +269,7 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   ${BUILD_WITH_GDB} \
   --with-binutils-version=${BINUTILS_VERSION-current} \
   \
-  --with-gmp-version=${GMP_VERSION-5.0.5} \
+  --with-gmp-version=${GMP_VERSION-current} \
   --with-mpfr-version=${MPFR_VERSION-3.1.1} \
   --with-mpc-version=${MPC_VERSION-current} \
   \

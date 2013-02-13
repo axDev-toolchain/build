@@ -421,6 +421,19 @@ fi
 AC_SUBST(MPC_VERSION)
 
 if test "$ENABLE_GRAPHITE" == "yes"; then
+# ppl version (default is 0.11.2)
+# ppl is only used for gcc 4.5+ with graphite optimization.
+AC_MSG_CHECKING([ppl version])
+AC_ARG_WITH([ppl-version],
+  [  --with-ppl-version=VERSION
+                          use ppl-VERSION (default is 0.11.2)],
+  [if test x"$withval" != x ; then
+     PPL_VERSION="$withval"
+   fi],
+[PPL_VERSION="0.11.2"])
+AC_MSG_RESULT($PPL_VERSION)
+ANDROID_CHECK_PACKAGE(ppl-${PPL_VERSION})
+
 # cloog is only used for gcc 4.5+ with graphite optimization.
 AC_MSG_CHECKING([cloog version])
 AC_ARG_WITH([cloog-version],
@@ -435,6 +448,7 @@ CLOOG_BACKEND="--enable-cloog-backend=isl"
 AC_SUBST(CLOOG_BACKEND)
 ANDROID_CHECK_PACKAGE(cloog-${CLOOG_VERSION})
 fi
+AC_SUBST(PPL_VERSION)
 AC_SUBST(CLOOG_VERSION)
 
 # gdb version (default is the current linaro release)
@@ -513,6 +527,19 @@ AC_ARG_WITH(gmp, [  --with-gmp=PATH
    fi],
   [have_gmp=no])
 AC_SUBST(have_gmp)
+
+# Specify a location for ppl
+AC_ARG_WITH(ppl, [  --with-ppl=PATH
+                          specify prefix directory for the installed PPL package.],
+  [if test -d "$withval" ; then
+     have_ppl="$withval"
+   elif test x"$withval" != x"no"; then
+     AC_MSG_ERROR(invalid value for --with-ppl)
+   else
+     have_ppl=no
+   fi],
+  [have_ppl=no])
+AC_SUBST(have_ppl)
 
 # Specify a location for cloog
 AC_ARG_WITH(cloog, [  --with-cloog=PATH

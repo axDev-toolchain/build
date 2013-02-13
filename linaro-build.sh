@@ -201,8 +201,9 @@ BUILD_WITH_LOCAL=
 BUILD_HOST=
 BUILD_SYSROOT=
 
+[ -z "${ARG_TOOLCHAIN_SRC_DIR}" ] && [ -x "`pwd`"/../build/configure ] && ARG_TOOLCHAIN_SRC_DIR="`pwd`/../build"
 if [ "${ARG_TOOLCHAIN_SRC_DIR}" = "" ] || [ ! -f "${ARG_TOOLCHAIN_SRC_DIR}/build/configure" ] ; then
-  error "--toolchain-src-dir is not set or ${ARG_TOOLCHAIN_SRC_DIR} is not ANDROID_TOOLCHAIN_ROOT"
+  error "--toolchain-src is not set or ${ARG_TOOLCHAIN_SRC_DIR} is not ANDROID_TOOLCHAIN_ROOT"
 fi
 
 if [ x"${ARG_WITH_GCC}" = x"" ]; then

@@ -421,23 +421,6 @@ fi
 AC_SUBST(MPC_VERSION)
 
 if test "$ENABLE_GRAPHITE" == "yes"; then
-# ppl version (default is 0.11.2)
-# ppl is only used for gcc 4.5+ with graphite optimization.
-AC_MSG_CHECKING([ppl version])
-AC_ARG_WITH([ppl-version],
-  [  --with-ppl-version=VERSION
-                          use ppl-VERSION (default is 0.11.2)],
-  [if test x"$withval" != x ; then
-     PPL_VERSION="$withval"
-   fi],
-[PPL_VERSION="0.11.2"])
-AC_MSG_RESULT($PPL_VERSION)
-ANDROID_CHECK_PACKAGE(ppl-${PPL_VERSION})
-fi
-AC_SUBST(PPL_VERSION)
-
-if test "$ENABLE_GRAPHITE" == "yes"; then
-# cloog-ppl or cloog version (default is 0.15.9)
 # cloog is only used for gcc 4.5+ with graphite optimization.
 AC_MSG_CHECKING([cloog version])
 AC_ARG_WITH([cloog-version],
@@ -446,30 +429,9 @@ AC_ARG_WITH([cloog-version],
   [if test x"$withval" != x ; then
      CLOOG_VERSION="$withval"
    fi],
-[CLOOG_VERSION="default"])
+[CLOOG_VERSION="current"])
 AC_MSG_RESULT($CLOOG_VERSION)
-if test "$CLOOG_VERSION" = "default"; then
-  AC_MSG_CHECKING([which version of cloog to build under gcc 4.6+ condition $GCC_MIN_VERSION_4_6_0])
-  # Default is 0.15.9 for gcc 4.5 and below, 0.16.3 for gcc 4.6 and higher
-  if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
-    CLOOG_VERSION="0.16.3"
-  else
-    CLOOG_VERSION="0.15.9"
-  fi
-  AC_MSG_RESULT([$CLOOG_VERSION])
-fi
-case $CLOOG_VERSION in
-  0.15*)
-    # CLooG/PPL relies on the PPL for version 0.15.x
-    CLOOG_VERSION="ppl-$CLOOG_VERSION"
-    ;;
-  0.16*)
-    # CLooG 0.16.x has its own embedded polyhedral library
-    CLOOG_BACKEND="--enable-cloog-backend=isl"
-    ;;
-  *)
-    AC_MSG_ERROR(Unsupported cloog version);
-esac
+CLOOG_BACKEND="--enable-cloog-backend=isl"
 AC_SUBST(CLOOG_BACKEND)
 ANDROID_CHECK_PACKAGE(cloog-${CLOOG_VERSION})
 fi
@@ -551,19 +513,6 @@ AC_ARG_WITH(gmp, [  --with-gmp=PATH
    fi],
   [have_gmp=no])
 AC_SUBST(have_gmp)
-
-# Specify a location for ppl
-AC_ARG_WITH(ppl, [  --with-ppl=PATH
-                          specify prefix directory for the installed PPL package.],
-  [if test -d "$withval" ; then
-     have_ppl="$withval"
-   elif test x"$withval" != x"no"; then
-     AC_MSG_ERROR(invalid value for --with-ppl)
-   else
-     have_ppl=no
-   fi],
-  [have_ppl=no])
-AC_SUBST(have_ppl)
 
 # Specify a location for cloog
 AC_ARG_WITH(cloog, [  --with-cloog=PATH

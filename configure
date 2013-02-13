@@ -584,7 +584,6 @@ PACKAGE_URL=''
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 have_cloog
-have_ppl
 have_gmp
 have_mpfr
 have_mpc
@@ -592,7 +591,6 @@ sysroot
 GDB_VERSION
 CLOOG_VERSION
 CLOOG_BACKEND
-PPL_VERSION
 MPC_VERSION
 MPFR_VERSION
 GMP_VERSION
@@ -674,14 +672,12 @@ with_newlib_version
 with_gmp_version
 with_mpfr_version
 with_mpc_version
-with_ppl_version
 with_cloog_version
 with_gdb_version
 with_sysroot
 with_mpc
 with_mpfr
 with_gmp
-with_ppl
 with_cloog
 '
       ac_precious_vars='build_alias
@@ -1325,8 +1321,6 @@ Optional Packages:
                           use mpfr-VERSION (default is 2.3.0)
   --with-mpc-version=VERSION
                           use mpc-VERSION (default is 0.8.1)
-  --with-ppl-version=VERSION
-                          use ppl-VERSION (default is 0.11.2)
   --with-cloog-version=VERSION
                           use cloog-VERSION
   --with-gdb-version=VERSION
@@ -1339,8 +1333,6 @@ Optional Packages:
                           specify prefix directory for installed MPFR package.
   --with-gmp=PATH
                           specify prefix directory for the installed GMP package.
-  --with-ppl=PATH
-                          specify prefix directory for the installed PPL package.
   --with-cloog=PATH
                           specify prefix directory for the installed CLooG package.
 
@@ -2582,49 +2574,6 @@ fi
 
 
 if test "$ENABLE_GRAPHITE" == "yes"; then
-# ppl version (default is 0.11.2)
-# ppl is only used for gcc 4.5+ with graphite optimization.
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking ppl version" >&5
-$as_echo_n "checking ppl version... " >&6; }
-
-# Check whether --with-ppl-version was given.
-if test "${with_ppl_version+set}" = set; then :
-  withval=$with_ppl_version; if test x"$withval" != x ; then
-     PPL_VERSION="$withval"
-   fi
-else
-  PPL_VERSION="0.11.2"
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PPL_VERSION" >&5
-$as_echo "$PPL_VERSION" >&6; }
-x=ppl-${PPL_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x" | sed -e 's/[^-]*-//'); \
-if test \( ! -d $srcdir/../$tool/ppl-${PPL_VERSION} \) -a \( x"$version" != x"none"  \) ; then
-  if test -f $srcdir/../$tool/ppl-${PPL_VERSION}.tar ; then
-    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/ppl-${PPL_VERSION}.tar
-  elif test -f $srcdir/../$tool/ppl-${PPL_VERSION}.tar.gz ; then
-    mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/ppl-${PPL_VERSION}.tar.gz
-  elif test -f $srcdir/../$tool/ppl-${PPL_VERSION}.tgz ; then
-    mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/ppl-${PPL_VERSION}.tgz
-  elif test -f $srcdir/../$tool/ppl-${PPL_VERSION}.tar.bz2 ; then
-    mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/ppl-${PPL_VERSION}.tar.bz2
-  elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.tar ; then
-    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/ppl-${PPL_VERSION}.tar
-  elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.tar.gz ; then
-    mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/ppl-${PPL_VERSION}.tar.gz
-  elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.tgz ; then
-    mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/ppl-${PPL_VERSION}.tgz
-  elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.tar.bz2 ; then
-    mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../tarballs/ppl-${PPL_VERSION}.tar.bz2
-  else
-    as_fn_error $? "'package ppl-${PPL_VERSION} does not exist.'" "$LINENO" 5
-  fi
-fi
-fi
-
-
-if test "$ENABLE_GRAPHITE" == "yes"; then
-# cloog-ppl or cloog version (default is 0.15.9)
 # cloog is only used for gcc 4.5+ with graphite optimization.
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking cloog version" >&5
 $as_echo_n "checking cloog version... " >&6; }
@@ -2635,35 +2584,12 @@ if test "${with_cloog_version+set}" = set; then :
      CLOOG_VERSION="$withval"
    fi
 else
-  CLOOG_VERSION="default"
+  CLOOG_VERSION="current"
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CLOOG_VERSION" >&5
 $as_echo "$CLOOG_VERSION" >&6; }
-if test "$CLOOG_VERSION" = "default"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: checking which version of cloog to build under gcc 4.6+ condition $GCC_MIN_VERSION_4_6_0" >&5
-$as_echo_n "checking which version of cloog to build under gcc 4.6+ condition $GCC_MIN_VERSION_4_6_0... " >&6; }
-  # Default is 0.15.9 for gcc 4.5 and below, 0.16.3 for gcc 4.6 and higher
-  if test "$GCC_MIN_VERSION_4_6_0" == "yes"; then
-    CLOOG_VERSION="0.16.3"
-  else
-    CLOOG_VERSION="0.15.9"
-  fi
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CLOOG_VERSION" >&5
-$as_echo "$CLOOG_VERSION" >&6; }
-fi
-case $CLOOG_VERSION in
-  0.15*)
-    # CLooG/PPL relies on the PPL for version 0.15.x
-    CLOOG_VERSION="ppl-$CLOOG_VERSION"
-    ;;
-  0.16*)
-    # CLooG 0.16.x has its own embedded polyhedral library
-    CLOOG_BACKEND="--enable-cloog-backend=isl"
-    ;;
-  *)
-    as_fn_error $? "Unsupported cloog version" "$LINENO" 5;
-esac
+CLOOG_BACKEND="--enable-cloog-backend=isl"
 
 x=cloog-${CLOOG_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x" | sed -e 's/[^-]*-//'); \
 if test \( ! -d $srcdir/../$tool/cloog-${CLOOG_VERSION} \) -a \( x"$version" != x"none"  \) ; then
@@ -2804,23 +2730,6 @@ if test "${with_gmp+set}" = set; then :
    fi
 else
   have_gmp=no
-fi
-
-
-
-# Specify a location for ppl
-
-# Check whether --with-ppl was given.
-if test "${with_ppl+set}" = set; then :
-  withval=$with_ppl; if test -d "$withval" ; then
-     have_ppl="$withval"
-   elif test x"$withval" != x"no"; then
-     as_fn_error $? "invalid value for --with-ppl" "$LINENO" 5
-   else
-     have_ppl=no
-   fi
-else
-  have_ppl=no
 fi
 
 

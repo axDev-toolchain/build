@@ -948,6 +948,8 @@ build-host-cloog: stmp-build-host-cloog
 stmp-install-host-cloog: stmp-build-host-cloog
 	$(MAKE) -C ${CLOOG_VERSION} install-libLTLIBRARIES \
 		install-pkgincludeHEADERS
+	$(MAKE) -C ${CLOOG_VERSION}/isl install-libLTLIBRARIES \
+		install-pkgincludeHEADERS
 	$(STAMP) $@
 install-host-cloog: stmp-install-host-cloog
 

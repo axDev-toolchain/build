@@ -271,7 +271,7 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   --with-binutils-version=${BINUTILS_VERSION-current} \
   \
   --with-gmp-version=${GMP_VERSION-current} \
-  --with-mpfr-version=${MPFR_VERSION-3.1.1} \
+  --with-mpfr-version=${MPFR_VERSION-current} \
   --with-mpc-version=${MPC_VERSION-current} \
   \
   ${LINARO_BUILD_EXTRA_CONFIGURE_FLAGS}

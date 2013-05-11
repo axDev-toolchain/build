@@ -23,7 +23,7 @@ ARG_WITH_GCC=
 ARG_WITH_GDB=
 ARG_WITH_SYSROOT=
 
-ARG_APPLY_PATCH=no
+ARG_APPLY_PATCH=yes
 
 abort() {
   echo $@
@@ -57,7 +57,7 @@ usage() {
   echo "  --with-gcc=<path>           Specify GCC source (support: directory, bzr, url)"
   echo "  --with-gdb=<path>           Specify gdb source (support: directory, bzr, url)"
   echo "  --with-sysroot=<path>       Specify SYSROOT directory"
-  echo "  --apply-gcc-patch=<yes|no>  Apply Linaro's extra gcc-patches [no]"
+  echo "  --apply-gcc-patch=<yes|no>  Apply Linaro's extra gcc-patches [yes]"
   echo "  --help                      Print this help message"
   echo
 }

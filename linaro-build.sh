@@ -99,12 +99,13 @@ downloadFromHTTP() {
     info "${file} is already exist, skip download"
   else
     wget -c "$url" || error "wget $1 error"
-    mv "$file" "${ARG_TOOLCHAIN_SRC_DIR}/$package/" || error "fail to move $file"
+    # Unpack it so we can apply patches if necessary
     #TODO: Add md5 check
+    tar -C "${ARG_TOOLCHAIN_SRC_DIR}/$package/" -xf "$file" || error "failed to untar $file"
   fi
 
   local src_dir=$(basename $file)
-  src_dir=$(echo $src_dir | sed "s/\(\.tar\.bz2\|\.tar\.gz\|\.tgz\|\.tbz\)//")
+  src_dir=$(echo $src_dir | sed "s/\(\.tar\.xz\|\.tar\.bz2\|\.tar\.gz\||.txz\|\.tgz\|\.tbz\)//")
   eval "ARG_LINARO_${PACKAGE_NAME}_SRC_DIR=${src_dir}"
 }
 

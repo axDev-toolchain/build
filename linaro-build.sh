@@ -277,7 +277,7 @@ ${ARG_TOOLCHAIN_SRC_DIR}/build/configure \
   \
   ${LINARO_BUILD_EXTRA_CONFIGURE_FLAGS}
 
-make HOSTGCC="$HOSTGCC" && make install
+make -j4 HOSTGCC="$HOSTGCC" && make install
 
 cat >${ARG_PREFIX_DIR}/BUILD-INFO.txt <<'EOF'
 Files-Pattern: *

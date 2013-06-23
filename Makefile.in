@@ -454,7 +454,8 @@ config-target-gcc: stmp-config-target-gcc
 
 GCC_CONFIG_ARGS=--prefix=$(prefix) \
 	  --host=${cur_host} --build=${cur_build} \
-	  --with-gnu-as --with-gnu-ld --enable-languages=c,c++
+	  --with-gnu-as --with-gnu-ld --enable-languages=c,c++ \
+	  --with-pkgversion="axDev-gcc48"
 
 # For gcc versions 4.3.0 and later, gmp and mpfr are required.
 # Also build libgcc is a seperate sub-target in 4.3.0+.
@@ -502,7 +503,7 @@ CFLAGS_FOR_TARGET += -isystem $(abs_srcdir)/../android/bionic/libc/arch-arm/incl
 endif
 # ARM specific options.
 ifeq ($(target_cpu),arm)
-GCC_CONFIG_ARGS += --with-float=soft --with-fpu=vfp --with-arch=armv5te \
+GCC_CONFIG_ARGS += --with-float=softfp --with-fpu=neon --with-arch=armv7-a --with-tune=cortex-a9 \
 	--enable-target-optspace
 ifneq ($(target_os),linux-androideabi)
 GCC_CONFIG_ARGS += --with-abi=aapcs

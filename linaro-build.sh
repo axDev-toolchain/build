@@ -238,6 +238,9 @@ if [ "x${ARG_APPLY_PATCH}" = "xyes" ]; then
   cd -
 fi
 
+# Apply patch to fix building with OpenJDK 1.7
+patch -d ../android/build -N -p1 --reject-file=- < allow-building-with-openjdk7.patch;
+
 if [ x"${ARG_WITH_GCC}" != x"" ]; then
   BUILD_WITH_GCC="--with-gcc-version=${ARG_LINARO_GCC_VER}"
 fi

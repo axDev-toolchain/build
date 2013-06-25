@@ -1,0 +1,62 @@
+diff --git a/core/main.mk b/core/main.mk
+index 6350aa4..199f680 100644
+--- a/core/main.mk
++++ b/core/main.mk
+@@ -44,10 +44,9 @@ ifeq (0,$(shell expr $$(echo $(MAKE_VERSION) | sed "s/[^0-9\.].*//") = 3.81))
+ ifeq (0,$(shell expr $$(echo $(MAKE_VERSION) | sed "s/[^0-9\.].*//") = 3.82))
+ $(warning ********************************************************************************)
+ $(warning *  You are using version $(MAKE_VERSION) of make.)
+-$(warning *  Android can only be built by versions 3.81 and 3.82.)
++$(warning *  Android is tested to build with versions 3.81 and 3.82.)
+ $(warning *  see https://source.android.com/source/download.html)
+ $(warning ********************************************************************************)
+-$(error stopping)
+ endif
+ endif
+ endif
+@@ -123,7 +122,7 @@ endif
+
+
+ # Check for the correct version of java
+-java_version := $(shell java -version 2>&1 | head -n 1 | grep '^java .*[ "]1\.6[\. "$$]')
++java_version := $(shell java -version 2>&1 | grep 'version' | grep '^java .*[ "]1\.[67][\. "$$]')
+ ifneq ($(shell java -version 2>&1 | grep -i openjdk),)
+ $(warning ************************************************************)
+ $(warning AOSP errors out when using OpenJDK, saying you need to use)
+@@ -136,27 +135,26 @@ $(warning ************************************************************)
+ endif
+ ifeq ($(strip $(java_version)),)
+ $(info ************************************************************)
+-$(info You are attempting to build with the unsupported version of java.)
++$(info You are attempting to build with an unsupported version)
++$(info of java.)
+ $(info $(space))
+ $(info Your version is: $(shell java -version 2>&1 | head -n 1).)
+-$(info The AOSP supported version is: Java SE 1.6.)
++$(info The correct version is: Java SE 1.6 or 1.7.)
+ $(info $(space))
+-$(info Linaro builds with java version "1.7.0_09" seems to work fine though.)
+-$(info AOSP supported machine setup instructions are at)
++$(info Please follow the machine setup instructions at)
+ $(info $(space)$(space)$(space)$(space)https://source.android.com/source/download.html)
+ $(info ************************************************************)
+-#$(error stop)
+ endif
+
+ # Check for the correct version of javac
+-javac_version := $(shell javac -version 2>&1 | head -n 1 | grep '[ "]1\.6[\. "$$]')
++javac_version := $(shell javac -version 2>&1 | head -n 1 | grep '[ "]1\.[67][\. "$$]')
+ ifeq ($(strip $(javac_version)),)
+ $(info ************************************************************)
+ $(info You are attempting to build with the incorrect version)
+ $(info of javac.)
+ $(info $(space))
+ $(info Your version is: $(shell javac -version 2>&1 | head -n 1).)
+-$(info The correct version is: 1.6.)
++$(info The correct version is: 1.6 or 1.7.)
+ $(info $(space))
+ $(info Please follow the machine setup instructions at)
+ $(info $(space)$(space)$(space)$(space)https://source.android.com/source/download.html)
+--
+1.8.1.2
+

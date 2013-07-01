@@ -606,6 +606,7 @@ endef
 
 
 patch-libgomp-for-android: config.status
+	mkdir -p temp-src && \
 	cd temp-src && \
 	grep -q sys/mman.h $(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c || sed -i -e '/#include <limits.h>/i#include <sys/mman.h>' $(call find-package-srcdir, ${GCC_VERSION})/libgomp/env.c
 

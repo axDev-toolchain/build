@@ -488,7 +488,8 @@ ifeq ($(BUILD_ANDROID_GCC),yes)
 GCC_CONFIG_ARGS += $(GCC_CONFIG_LIBSTDCXX_V3) --disable-libssp \
 	--disable-nls --disable-libmudflap \
 	--disable-shared --disable-sjlj-exceptions \
-	--disable-libquadmath --disable-libitm --disable-libatomic
+	--disable-libquadmath --disable-libitm --disable-libatomic \
+	--disable-libsanitizer
 CFLAGS_FOR_TARGET += -DTARGET_POSIX_IO -fno-short-enums
 # We need to find pthread.h to build libgcc with threading support.
 # -include .../sys/limits.h is a workaround for Bionic's ptherad.h requiring
@@ -631,7 +632,7 @@ stmp-config-bootstrap-gcc: config.status stmp-install-host-ppl stmp-build-target
 	 export CFLAGS="-O2 -m32" ; \
 	 export CXXFLAGS="-O2 -m32" ; \
 	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
-	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --disable-libgomp --disable-libstdc__-v3 --disable-libitm --disable-libatomic) && \
+	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --disable-libgomp --disable-libstdc__-v3 --disable-libitm --disable-libsanitizer --disable-libatomic) && \
 	$(STAMP) $@
 build-bootstrap-gcc: stmp-build-bootstrap-gcc
 stmp-build-bootstrap-gcc: stmp-config-bootstrap-gcc
@@ -680,7 +681,7 @@ stmp-config-target-gcc: config.status stmp-install-host-ppl stmp-patch-libgomp-f
 	 export CFLAGS="-O2 -m32" ; \
 	 export CXXFLAGS="-O2 -m32" ; \
 	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
-	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --enable-libgomp --disable-libitm --disable-libatomic --disable-libstdc__-v3) && \
+	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --enable-libgomp --disable-libitm --disable-libsanitizer --disable-libatomic --disable-libstdc__-v3) && \
 	$(STAMP) $@
 build-target-gcc: stmp-build-target-gcc
 stmp-build-target-gcc: stmp-config-target-gcc
@@ -736,7 +737,7 @@ stmp-config-generic-target-gcc: config.status stmp-install-host-ppl stmp-build-t
 	 export CFLAGS="-O2 -m32" ; \
 	 export CXXFLAGS="-O2 -m32" ; \
 	 $(call find-package-srcdir, $(GCC_VERSION))/configure \
-	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --disable-libgomp --disable-libstdc__-v3 --disable-libitm --disable-libatomic) && \
+	  $(GCC_CONFIG_ARGS) --target=$$TARGET --enable-threads --enable-tls --disable-libgomp --disable-libstdc__-v3 --disable-libitm --disable-libsanitizer --disable-libatomic) && \
 	$(STAMP) $@
 build-generic-target-gcc: stmp-build-generic-target-gcc
 stmp-build-generic-target-gcc: stmp-config-generic-target-gcc

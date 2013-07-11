@@ -125,7 +125,7 @@ getPackage() {
     *)
       package=$(basename $1)
       version=${package#*-}
-      version=$(echo $version | sed "s/\(\.tar\.bz2\|\.tar\.gz\|\.tgz\|\.tbz\)//")
+      version=$(echo $version | sed "s/\(\.tar\.xz\|\.tar\.bz2\|\.tar\.gz\|\.txz\|\.tgz\|\.tbz\)//")
       package=${package%%-*}
       ;;
   esac

@@ -2219,9 +2219,12 @@ esac
 # macro to check that we have a package. A package x exists if any one
 # of the following exists (x is in the format of "tool-version"):
 # 1. tool/x
-# 2. tool/x.tar.gz
-# 3. tool/x.tgz
-# 4. tool/x.tar.bz2
+# 2. tool/x.tar
+# 3. tool/x.tar.xz
+# 4. tool/x.txz
+# 5. tool/x.tar.gz
+# 6. tool/x.tgz
+# 7. tool/x.tar.bz2
 
 
 
@@ -2245,6 +2248,10 @@ x=binutils-${BINUTILS_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(
 if test \( ! -d $srcdir/../$tool/binutils-${BINUTILS_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/binutils-${BINUTILS_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/binutils-${BINUTILS_VERSION}.tar
+  elif test -f $srcdir/../$tool/binutils-${BINUTILS_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/binutils-${BINUTILS_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/binutils-${BINUTILS_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/binutils-${BINUTILS_VERSION}.txz
   elif test -f $srcdir/../$tool/binutils-${BINUTILS_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/binutils-${BINUTILS_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/binutils-${BINUTILS_VERSION}.tgz ; then
@@ -2253,6 +2260,10 @@ if test \( ! -d $srcdir/../$tool/binutils-${BINUTILS_VERSION} \) -a \( x"$versio
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/binutils-${BINUTILS_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.tar
+  elif test -f $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.txz
   elif test -f $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/binutils-${BINUTILS_VERSION}.tgz ; then
@@ -2287,6 +2298,10 @@ if test x"$GOLD_VERSION" != x"$BINUTILS_VERSION" ; then
 if test \( ! -d $srcdir/../$tool/binutils-${GOLD_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/binutils-${GOLD_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/binutils-${GOLD_VERSION}.tar
+  elif test -f $srcdir/../$tool/binutils-${GOLD_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/binutils-${GOLD_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/binutils-${GOLD_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/binutils-${GOLD_VERSION}.txz
   elif test -f $srcdir/../$tool/binutils-${GOLD_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/binutils-${GOLD_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/binutils-${GOLD_VERSION}.tgz ; then
@@ -2295,6 +2310,10 @@ if test \( ! -d $srcdir/../$tool/binutils-${GOLD_VERSION} \) -a \( x"$version" !
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/binutils-${GOLD_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/binutils-${GOLD_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/binutils-${GOLD_VERSION}.tar
+  elif test -f $srcdir/../tarballs/binutils-${GOLD_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/binutils-${GOLD_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/binutils-${GOLD_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/binutils-${GOLD_VERSION}.txz
   elif test -f $srcdir/../tarballs/binutils-${GOLD_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/binutils-${GOLD_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/binutils-${GOLD_VERSION}.tgz ; then
@@ -2327,6 +2346,10 @@ x=gcc-${GCC_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x" 
 if test \( ! -d $srcdir/../$tool/gcc-${GCC_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/gcc-${GCC_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gcc-${GCC_VERSION}.tar
+  elif test -f $srcdir/../$tool/gcc-${GCC_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gcc-${GCC_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/gcc-${GCC_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gcc-${GCC_VERSION}.txz
   elif test -f $srcdir/../$tool/gcc-${GCC_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/gcc-${GCC_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/gcc-${GCC_VERSION}.tgz ; then
@@ -2335,6 +2358,10 @@ if test \( ! -d $srcdir/../$tool/gcc-${GCC_VERSION} \) -a \( x"$version" != x"no
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/gcc-${GCC_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/gcc-${GCC_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gcc-${GCC_VERSION}.tar
+  elif test -f $srcdir/../tarballs/gcc-${GCC_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gcc-${GCC_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/gcc-${GCC_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gcc-${GCC_VERSION}.txz
   elif test -f $srcdir/../tarballs/gcc-${GCC_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/gcc-${GCC_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/gcc-${GCC_VERSION}.tgz ; then
@@ -2436,6 +2463,10 @@ x=newlib-${NEWLIB_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo
 if test \( ! -d $srcdir/../$tool/newlib-${NEWLIB_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/newlib-${NEWLIB_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/newlib-${NEWLIB_VERSION}.tar
+  elif test -f $srcdir/../$tool/newlib-${NEWLIB_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/newlib-${NEWLIB_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/newlib-${NEWLIB_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/newlib-${NEWLIB_VERSION}.txz
   elif test -f $srcdir/../$tool/newlib-${NEWLIB_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/newlib-${NEWLIB_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/newlib-${NEWLIB_VERSION}.tgz ; then
@@ -2444,6 +2475,10 @@ if test \( ! -d $srcdir/../$tool/newlib-${NEWLIB_VERSION} \) -a \( x"$version" !
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/newlib-${NEWLIB_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.tar
+  elif test -f $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.txz
   elif test -f $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/newlib-${NEWLIB_VERSION}.tgz ; then
@@ -2477,6 +2512,10 @@ x=gmp-${GMP_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x" 
 if test \( ! -d $srcdir/../$tool/gmp-${GMP_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/gmp-${GMP_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gmp-${GMP_VERSION}.tar
+  elif test -f $srcdir/../$tool/gmp-${GMP_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gmp-${GMP_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/gmp-${GMP_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gmp-${GMP_VERSION}.txz
   elif test -f $srcdir/../$tool/gmp-${GMP_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/gmp-${GMP_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/gmp-${GMP_VERSION}.tgz ; then
@@ -2485,6 +2524,10 @@ if test \( ! -d $srcdir/../$tool/gmp-${GMP_VERSION} \) -a \( x"$version" != x"no
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/gmp-${GMP_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/gmp-${GMP_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gmp-${GMP_VERSION}.tar
+  elif test -f $srcdir/../tarballs/gmp-${GMP_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gmp-${GMP_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/gmp-${GMP_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gmp-${GMP_VERSION}.txz
   elif test -f $srcdir/../tarballs/gmp-${GMP_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/gmp-${GMP_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/gmp-${GMP_VERSION}.tgz ; then
@@ -2516,6 +2559,10 @@ x=mpfr-${MPFR_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x
 if test \( ! -d $srcdir/../$tool/mpfr-${MPFR_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/mpfr-${MPFR_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/mpfr-${MPFR_VERSION}.tar
+  elif test -f $srcdir/../$tool/mpfr-${MPFR_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/mpfr-${MPFR_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/mpfr-${MPFR_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/mpfr-${MPFR_VERSION}.txz
   elif test -f $srcdir/../$tool/mpfr-${MPFR_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/mpfr-${MPFR_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/mpfr-${MPFR_VERSION}.tgz ; then
@@ -2524,6 +2571,10 @@ if test \( ! -d $srcdir/../$tool/mpfr-${MPFR_VERSION} \) -a \( x"$version" != x"
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/mpfr-${MPFR_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/mpfr-${MPFR_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/mpfr-${MPFR_VERSION}.tar
+  elif test -f $srcdir/../tarballs/mpfr-${MPFR_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/mpfr-${MPFR_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/mpfr-${MPFR_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/mpfr-${MPFR_VERSION}.txz
   elif test -f $srcdir/../tarballs/mpfr-${MPFR_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/mpfr-${MPFR_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/mpfr-${MPFR_VERSION}.tgz ; then
@@ -2560,6 +2611,10 @@ x=mpc-${MPC_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x" 
 if test \( ! -d $srcdir/../$tool/mpc-${MPC_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/mpc-${MPC_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/mpc-${MPC_VERSION}.tar
+  elif test -f $srcdir/../$tool/mpc-${MPC_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/mpc-${MPC_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/mpc-${MPC_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/mpc-${MPC_VERSION}.txz
   elif test -f $srcdir/../$tool/mpc-${MPC_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/mpc-${MPC_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/mpc-${MPC_VERSION}.tgz ; then
@@ -2568,6 +2623,10 @@ if test \( ! -d $srcdir/../$tool/mpc-${MPC_VERSION} \) -a \( x"$version" != x"no
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/mpc-${MPC_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/mpc-${MPC_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/mpc-${MPC_VERSION}.tar
+  elif test -f $srcdir/../tarballs/mpc-${MPC_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/mpc-${MPC_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/mpc-${MPC_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/mpc-${MPC_VERSION}.txz
   elif test -f $srcdir/../tarballs/mpc-${MPC_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/mpc-${MPC_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/mpc-${MPC_VERSION}.tgz ; then
@@ -2602,6 +2661,10 @@ x=ppl-${PPL_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x" 
 if test \( ! -d $srcdir/../$tool/ppl-${PPL_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/ppl-${PPL_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/ppl-${PPL_VERSION}.tar
+  elif test -f $srcdir/../$tool/ppl-${PPL_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/ppl-${PPL_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/ppl-${PPL_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/ppl-${PPL_VERSION}.txz
   elif test -f $srcdir/../$tool/ppl-${PPL_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/ppl-${PPL_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/ppl-${PPL_VERSION}.tgz ; then
@@ -2610,6 +2673,10 @@ if test \( ! -d $srcdir/../$tool/ppl-${PPL_VERSION} \) -a \( x"$version" != x"no
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/ppl-${PPL_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/ppl-${PPL_VERSION}.tar
+  elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/ppl-${PPL_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/ppl-${PPL_VERSION}.txz
   elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/ppl-${PPL_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/ppl-${PPL_VERSION}.tgz ; then
@@ -2642,6 +2709,10 @@ x=cloog-${CLOOG_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "
 if test \( ! -d $srcdir/../$tool/cloog-${CLOOG_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/cloog-${CLOOG_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/cloog-${CLOOG_VERSION}.tar
+  elif test -f $srcdir/../$tool/cloog-${CLOOG_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/cloog-${CLOOG_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/cloog-${CLOOG_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/cloog-${CLOOG_VERSION}.txz
   elif test -f $srcdir/../$tool/cloog-${CLOOG_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/cloog-${CLOOG_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/cloog-${CLOOG_VERSION}.tgz ; then
@@ -2650,6 +2721,10 @@ if test \( ! -d $srcdir/../$tool/cloog-${CLOOG_VERSION} \) -a \( x"$version" != 
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/cloog-${CLOOG_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/cloog-${CLOOG_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/cloog-${CLOOG_VERSION}.tar
+  elif test -f $srcdir/../tarballs/cloog-${CLOOG_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/cloog-${CLOOG_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/cloog-${CLOOG_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/cloog-${CLOOG_VERSION}.txz
   elif test -f $srcdir/../tarballs/cloog-${CLOOG_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/cloog-${CLOOG_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/cloog-${CLOOG_VERSION}.tgz ; then
@@ -2684,6 +2759,10 @@ x=gdb-${GDB_VERSION}; tool=$(echo "$x" | sed -e 's/-.*//'); version=$(echo "$x" 
 if test \( ! -d $srcdir/../$tool/gdb-${GDB_VERSION} \) -a \( x"$version" != x"none"  \) ; then
   if test -f $srcdir/../$tool/gdb-${GDB_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gdb-${GDB_VERSION}.tar
+  elif test -f $srcdir/../$tool/gdb-${GDB_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gdb-${GDB_VERSION}.tar.xz
+  elif test -f $srcdir/../$tool/gdb-${GDB_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../$tool/gdb-${GDB_VERSION}.txz
   elif test -f $srcdir/../$tool/gdb-${GDB_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../$tool/gdb-${GDB_VERSION}.tar.gz
   elif test -f $srcdir/../$tool/gdb-${GDB_VERSION}.tgz ; then
@@ -2692,6 +2771,10 @@ if test \( ! -d $srcdir/../$tool/gdb-${GDB_VERSION} \) -a \( x"$version" != x"no
     mkdir -p temp-src && tar -C temp-src -xjf $srcdir/../$tool/gdb-${GDB_VERSION}.tar.bz2
   elif test -f $srcdir/../tarballs/gdb-${GDB_VERSION}.tar ; then
     mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gdb-${GDB_VERSION}.tar
+  elif test -f $srcdir/../tarballs/gdb-${GDB_VERSION}.tar.xz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gdb-${GDB_VERSION}.tar.xz
+  elif test -f $srcdir/../tarballs/gdb-${GDB_VERSION}.txz ; then
+    mkdir -p temp-src && tar -C temp-src -xf $srcdir/../tarballs/gdb-${GDB_VERSION}.txz
   elif test -f $srcdir/../tarballs/gdb-${GDB_VERSION}.tar.gz ; then
     mkdir -p temp-src && tar -C temp-src -xzf $srcdir/../tarballs/gdb-${GDB_VERSION}.tar.gz
   elif test -f $srcdir/../tarballs/gdb-${GDB_VERSION}.tgz ; then

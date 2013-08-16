@@ -22,6 +22,8 @@ fi
 SOURCE=/media/root/Toshiba/Sources/aosp-toolchain;
 DEST=/tmp/$TARGET-$GCC;
 
+ARG_APPLY_PATCH=yes
+
 # Set locales to avoid python warnings
 export LC_ALL=C;
 
@@ -34,8 +36,18 @@ export CCACHE_DIR=$SOURCE/.ccache;
 cd $SOURCE/binutils/binutils-$BINUTILS && git add . && git reset --hard --quiet;
 patch -N -p1 --reject-file=- < $SOURCE/build/binutils-$BINUTILS-android.patch;
 
-cd $SOURCE/gcc/gcc-$GCC && git add . && git reset --hard --quiet;
-patch -N -p1 --reject-file=- < $SOURCE/build/gcc-$GCC-android.patch;
+if [ "x${ARG_APPLY_PATCH}" = "xyes" ]; then
+  sub_gcc_ver="`echo ${GCC} | grep -o '4\.\([5-9]\|[1-9][0-9]\)'`"
+  echo "Will apply patches in gcc-patches/${sub_gcc_ver}"
+  cd ${SOURCE}/gcc/gcc-${GCC} &&
+  for FILE in `ls ${SOURCE}/gcc-patches/${sub_gcc_ver} 2>/dev/null` ; do
+    if [ ! -f ${FILE}-patch.log ]; then
+      echo "Apply patch: ${FILE}"
+      git apply ${SOURCE}/gcc-patches/${sub_gcc_ver}/${FILE} 2>&1 | \
+        tee "${FILE}-patch.log"
+    fi
+  done
+fi
 
 # Remove existing output dir
 if [ -d $DEST ];then rm -rf $DEST; fi

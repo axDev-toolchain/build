@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # What we're building with
-[ -z "$BINUTILS" ] && BINUTILS=upstream;
+[ -z "$BINUTILS" ] && BINUTILS=2.23;
 [ -z "$CLOOG" ] && CLOOG=0.18.0;
 [ -z "$PPL" ] && PPL=1.0.x;
 [ -z "$GCC" ] && GCC=4.8;
@@ -22,7 +22,7 @@ fi
 SOURCE=/media/root/Toshiba/Sources/aosp-toolchain;
 DEST=/tmp/$TARGET-$GCC;
 
-ARG_APPLY_PATCH=yes
+ARG_APPLY_PATCH=yes;
 
 # Set locales to avoid python warnings
 export LC_ALL=C;
@@ -32,10 +32,7 @@ export USE_CCACHE=1;
 export CCACHE_DIR=$SOURCE/.ccache;
 
 
-# Apply AOSP specific patches to binutils and gcc
-cd $SOURCE/binutils/binutils-$BINUTILS && git add . && git reset --hard --quiet;
-patch -N -p1 --reject-file=- < $SOURCE/build/binutils-$BINUTILS-android.patch;
-
+# Apply AOSP specific patches to upstream gcc
 if [ "x${ARG_APPLY_PATCH}" = "xyes" ]; then
   sub_gcc_ver="`echo ${GCC} | grep -o '4\.\([5-9]\|[1-9][0-9]\)'`"
   echo "Will apply patches in gcc-patches/${sub_gcc_ver}"
@@ -72,6 +69,7 @@ cd $SOURCE/build &&
             --with-sysroot=$SYSROOT \
             --with-tune=cortex-a9 \
             --target=$TARGET \
+            --enable-gold=default \
             --enable-graphite=yes \
             --disable-docs \
             --disable-nls \

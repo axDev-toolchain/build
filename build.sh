@@ -75,4 +75,4 @@ cd $SOURCE/build &&
             --disable-nls \
             --with-pkgversion="axDev GCC"
 
-make && make install;
+make && make install && source generate-makefiles.sh;

@@ -67,7 +67,6 @@ cd $SOURCE/build &&
             --with-gold-version="$BINUTILS" \
             --with-gcc-version="$GCC" \
             --with-sysroot=$SYSROOT \
-            --with-tune=cortex-a9 \
             --target=$TARGET \
             --enable-gold=default \
             --enable-graphite=yes \
